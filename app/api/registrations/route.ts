@@ -13,6 +13,40 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Kategori tidak valid." }, { status: 400 });
     }
 
+    const requiredFields = [
+      "full_name",
+      "email",
+      "phone",
+      "birth_date",
+      "gender",
+      "domicile_city",
+      "shirt_size",
+      "address",
+      "village",
+      "district",
+      "city_regency",
+      "province",
+      "postal_code"
+    ];
+    if (category === "Offline") {
+      requiredFields.push("emergency_name", "emergency_phone", "emergency_relation");
+    } else {
+      requiredFields.push("running_app_account");
+    }
+
+    const missingField = requiredFields.find((field) => !value(formData, field));
+    if (missingField || !formData.get("truth_consent") || !formData.get("address_consent") || !formData.get("health_consent")) {
+      return NextResponse.json({ error: "Mohon lengkapi semua data wajib sebelum submit." }, { status: 400 });
+    }
+
+    if (!isValidPhone(value(formData, "phone")) || (category === "Offline" && !isValidPhone(value(formData, "emergency_phone")))) {
+      return NextResponse.json({ error: "Nomor telepon harus diawali 0 dan berisi angka 10-12 digit." }, { status: 400 });
+    }
+
+    if (!/^\d{5}$/.test(value(formData, "postal_code"))) {
+      return NextResponse.json({ error: "Kode pos harus 5 digit angka." }, { status: 400 });
+    }
+
     const now = Date.now();
     if (now < Date.parse(defaultSettings.registrationOpensAt) || now > Date.parse(defaultSettings.registrationClosesAt)) {
       return NextResponse.json({ error: "Periode pendaftaran belum dibuka atau sudah ditutup." }, { status: 400 });
@@ -34,6 +68,10 @@ export async function POST(request: NextRequest) {
     let paymentProofUrl: string | null = null;
 
     if (proof instanceof File && proof.size > 0) {
+      if (!isAllowedProofFile(proof)) {
+        return NextResponse.json({ error: "Bukti pembayaran hanya boleh berupa file JPG, PNG, atau PDF." }, { status: 400 });
+      }
+
       const path = `payment-proofs/${token}-${sanitizeFilename(proof.name)}`;
       const { error } = await supabase.storage.from("event-uploads").upload(path, proof, {
         contentType: proof.type || "application/octet-stream",
@@ -41,6 +79,8 @@ export async function POST(request: NextRequest) {
       });
       if (error) throw error;
       paymentProofUrl = getPublicFileUrl(path);
+    } else {
+      return NextResponse.json({ error: "Bukti pembayaran wajib diupload." }, { status: 400 });
     }
 
     const payload = {
@@ -94,6 +134,18 @@ function value(formData: FormData, key: string) {
 function nullableValue(formData: FormData, key: string) {
   const current = value(formData, key);
   return current || null;
+}
+
+function isValidPhone(phone: string) {
+  return /^0\d{9,11}$/.test(phone);
+}
+
+function isAllowedProofFile(file: File) {
+  const allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+  const allowedExtensions = [".jpg", ".jpeg", ".png", ".pdf"];
+  const filename = file.name.toLowerCase();
+  const hasAllowedExtension = allowedExtensions.some((extension) => filename.endsWith(extension));
+  return hasAllowedExtension && (!file.type || allowedTypes.includes(file.type));
 }
 
 function sanitizeFilename(filename: string) {

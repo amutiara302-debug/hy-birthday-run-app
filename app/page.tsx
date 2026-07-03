@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { defaultSettings, formatRupiah, premiumShirtFee } from "@/lib/config";
+import { defaultSettings, formatRupiah } from "@/lib/config";
 
 export default function HomePage() {
   return (
@@ -94,7 +94,6 @@ export default function HomePage() {
               <div className="category-top"><span className="pill">Offline</span><span>Kuota 325</span></div>
               <h3>Offline Run 5,8KM</h3>
               <p className="price">{formatRupiah(defaultSettings.offlinePrice)} <small>+ ongkir {formatRupiah(defaultSettings.shippingFee)}</small></p>
-              <p className="muted">Size 3XL-5XL tambah {formatRupiah(premiumShirtFee)}.</p>
               <ul>
                 <li>Jersey</li>
                 <li>Medali finisher</li>
@@ -107,7 +106,6 @@ export default function HomePage() {
               <div className="category-top"><span className="pill">Virtual</span><span>Kuota 75</span></div>
               <h3>Virtual Run 5,8KM</h3>
               <p className="price">{formatRupiah(defaultSettings.virtualPrice)} <small>+ ongkir {formatRupiah(defaultSettings.shippingFee)}</small></p>
-              <p className="muted">Size 3XL-5XL tambah {formatRupiah(premiumShirtFee)}.</p>
               <ul>
                 <li>Jersey</li>
                 <li>Medali</li>

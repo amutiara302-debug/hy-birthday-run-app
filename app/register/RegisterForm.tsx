@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { indonesiaAddressOptions } from "@/lib/address-options";
 import { defaultSettings, formatRupiah, getRegistrationTotal, getShirtSurcharge, premiumShirtFee, shirtSizes } from "@/lib/config";
 import type { Category } from "@/lib/types";
 
@@ -10,8 +11,25 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
   const [message, setMessage] = useState("");
   const [participantUrl, setParticipantUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [formReady, setFormReady] = useState(false);
+  const [cityRegency, setCityRegency] = useState("");
+  const [province, setProvince] = useState("");
+  const [postalCode, setPostalCode] = useState("");
   const shirtSurcharge = useMemo(() => getShirtSurcharge(shirtSize), [shirtSize]);
   const total = useMemo(() => getRegistrationTotal(category, shirtSize), [category, shirtSize]);
+
+  function applyAddressSuggestion(nextCity: string) {
+    setCityRegency(nextCity);
+    const selected = indonesiaAddressOptions.find((item) => item.city.toLowerCase() === nextCity.trim().toLowerCase());
+    if (selected) {
+      setProvince(selected.province);
+      setPostalCode(selected.postalCode);
+    }
+  }
+
+  function updateFormReady(form: HTMLFormElement) {
+    window.setTimeout(() => setFormReady(form.checkValidity()), 0);
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -37,13 +55,26 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
     setParticipantUrl(result.participantUrl || "");
     setMessage("Pendaftaran diterima. Simpan link unik peserta di bawah ini.");
     event.currentTarget.reset();
+    setShirtSize("M");
+    setCityRegency("");
+    setProvince("");
+    setPostalCode("");
+    setFormReady(false);
   }
 
   return (
-    <form className="registration-form" onSubmit={handleSubmit}>
+    <form
+      className="registration-form"
+      onInput={(event) => updateFormReady(event.currentTarget)}
+      onChange={(event) => updateFormReady(event.currentTarget)}
+      onSubmit={handleSubmit}
+    >
       <label>
         Kategori
-        <select value={category} onChange={(event) => setCategory(event.target.value as Category)}>
+        <select value={category} onChange={(event) => {
+          setCategory(event.target.value as Category);
+          setFormReady(false);
+        }}>
           <option value="Offline">Offline Run 5,8KM</option>
           <option value="Virtual">Virtual Run 5,8KM</option>
         </select>
@@ -54,7 +85,19 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
         <label>Email aktif <input required name="email" type="email" placeholder="nama@email.com" /></label>
       </div>
       <div className="two-col">
-        <label>Nomor telepon <input required name="phone" type="tel" placeholder="08xxxxxxxxxx" /></label>
+        <label>Nomor telepon
+          <input
+            required
+            name="phone"
+            type="tel"
+            inputMode="numeric"
+            pattern="0[0-9]{9,11}"
+            minLength={10}
+            maxLength={12}
+            title="Nomor telepon harus diawali 0 dan berisi angka 10-12 digit."
+            placeholder="08xxxxxxxxxx"
+          />
+        </label>
         <label>Tanggal lahir <input required name="birth_date" type="date" /></label>
       </div>
       <div className="two-col">
@@ -71,7 +114,19 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
         <div className="conditional-fields">
           <div className="two-col">
             <label>Nama kontak emergency <input required name="emergency_name" /></label>
-            <label>Nomor emergency <input required name="emergency_phone" type="tel" /></label>
+            <label>Nomor emergency
+              <input
+                required
+                name="emergency_phone"
+                type="tel"
+                inputMode="numeric"
+                pattern="0[0-9]{9,11}"
+                minLength={10}
+                maxLength={12}
+                title="Nomor telepon harus diawali 0 dan berisi angka 10-12 digit."
+                placeholder="08xxxxxxxxxx"
+              />
+            </label>
           </div>
           <label>Hubungan dengan kontak emergency <input required name="emergency_relation" placeholder="Suami/Istri, Kakak/Adik, Teman" /></label>
         </div>
@@ -87,20 +142,58 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
             {shirtSizes.map((size) => <option key={size}>{size}</option>)}
           </select>
         </label>
-        <label>Bukti pembayaran <input required name="payment_proof" type="file" accept="image/*,.pdf" /></label>
+        <label>Bukti pembayaran <input required name="payment_proof" type="file" accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf" /></label>
       </div>
 
       <label>Alamat lengkap <textarea required name="address" placeholder="Alamat lengkap pengiriman" /></label>
       <div className="three-col">
         <label>Kelurahan <input required name="village" /></label>
         <label>Kecamatan <input required name="district" /></label>
-        <label>Kota/Kabupaten <input required name="city_regency" /></label>
+        <label>Kota/Kabupaten
+          <input
+            required
+            name="city_regency"
+            list="indonesia-cities"
+            value={cityRegency}
+            onChange={(event) => applyAddressSuggestion(event.target.value)}
+            autoComplete="address-level2"
+            placeholder="Pilih/ketik kota atau kabupaten"
+          />
+        </label>
       </div>
       <div className="three-col">
-        <label>Provinsi <input required name="province" /></label>
-        <label>Kode pos <input required name="postal_code" /></label>
+        <label>Provinsi
+          <input
+            required
+            name="province"
+            value={province}
+            onChange={(event) => setProvince(event.target.value)}
+            autoComplete="address-level1"
+          />
+        </label>
+        <label>Kode pos
+          <input
+            required
+            name="postal_code"
+            value={postalCode}
+            onChange={(event) => setPostalCode(event.target.value.replace(/\D/g, "").slice(0, 5))}
+            inputMode="numeric"
+            pattern="[0-9]{5}"
+            minLength={5}
+            maxLength={5}
+            title="Kode pos harus 5 digit angka."
+            autoComplete="postal-code"
+          />
+        </label>
         <label>Catatan alamat <input name="address_notes" placeholder="Patokan, warna pagar, dll." /></label>
       </div>
+      <datalist id="indonesia-cities">
+        {indonesiaAddressOptions.map((item) => (
+          <option key={`${item.city}-${item.postalCode}`} value={item.city}>
+            {item.province} - {item.postalCode}
+          </option>
+        ))}
+      </datalist>
 
       <div className="size-chart">
         <strong>Size chart</strong>
@@ -144,7 +237,7 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
       </div>
       {shirtSurcharge > 0 ? <p className="muted">Termasuk tambahan size {shirtSize}: {formatRupiah(shirtSurcharge)}.</p> : null}
       <p className="muted">Transfer ke rekening {defaultSettings.bankName} {defaultSettings.bankAccountNumber} a/n {defaultSettings.accountHolder}.</p>
-      <button className="button primary full" disabled={submitting} type="submit">{submitting ? "Mengirim..." : "Submit Pendaftaran"}</button>
+      <button className="button primary full" disabled={submitting || !formReady} type="submit">{submitting ? "Mengirim..." : "Submit Pendaftaran"}</button>
       {message ? <p className="form-message">{message}</p> : null}
       {participantUrl ? <a className="button secondary full" href={participantUrl}>Buka link unik peserta</a> : null}
     </form>
