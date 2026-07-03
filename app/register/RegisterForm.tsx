@@ -1,31 +1,56 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { indonesiaAddressOptions } from "@/lib/address-options";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { defaultSettings, formatRupiah, getRegistrationTotal, getShirtSurcharge, premiumShirtFee, shirtSizes } from "@/lib/config";
+import { fallbackProvinces, postalCodeApiUrl, regionApiBaseUrl, type RegionOption } from "@/lib/indonesia-regions";
 import type { Category } from "@/lib/types";
 
 export default function RegisterForm({ initialCategory }: { initialCategory: Category }) {
+  const formRef = useRef<HTMLFormElement>(null);
   const [category, setCategory] = useState<Category>(initialCategory);
   const [shirtSize, setShirtSize] = useState("M");
   const [message, setMessage] = useState("");
   const [participantUrl, setParticipantUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [formReady, setFormReady] = useState(false);
+  const [provinces, setProvinces] = useState<RegionOption[]>(fallbackProvinces);
+  const [regencies, setRegencies] = useState<RegionOption[]>([]);
+  const [districts, setDistricts] = useState<RegionOption[]>([]);
+  const [villages, setVillages] = useState<RegionOption[]>([]);
+  const [provinceId, setProvinceId] = useState("");
+  const [regencyId, setRegencyId] = useState("");
+  const [districtId, setDistrictId] = useState("");
   const [cityRegency, setCityRegency] = useState("");
+  const [district, setDistrict] = useState("");
+  const [village, setVillage] = useState("");
   const [province, setProvince] = useState("");
   const [postalCode, setPostalCode] = useState("");
+  const [postalCodeStatus, setPostalCodeStatus] = useState("");
   const shirtSurcharge = useMemo(() => getShirtSurcharge(shirtSize), [shirtSize]);
   const total = useMemo(() => getRegistrationTotal(category, shirtSize), [category, shirtSize]);
 
-  function applyAddressSuggestion(nextCity: string) {
-    setCityRegency(nextCity);
-    const selected = indonesiaAddressOptions.find((item) => item.city.toLowerCase() === nextCity.trim().toLowerCase());
-    if (selected) {
-      setProvince(selected.province);
-      setPostalCode(selected.postalCode);
-    }
-  }
+  useEffect(() => {
+    if (formRef.current) updateFormReady(formRef.current);
+  }, [category, shirtSize, provinceId, regencyId, districtId, village, postalCode]);
+
+  useEffect(() => {
+    loadRegions(`${regionApiBaseUrl}/provinces.json`, fallbackProvinces).then(setProvinces);
+  }, []);
+
+  useEffect(() => {
+    if (!provinceId) return;
+    loadRegions(`${regionApiBaseUrl}/regencies/${provinceId}.json`, []).then(setRegencies);
+  }, [provinceId]);
+
+  useEffect(() => {
+    if (!regencyId) return;
+    loadRegions(`${regionApiBaseUrl}/districts/${regencyId}.json`, []).then(setDistricts);
+  }, [regencyId]);
+
+  useEffect(() => {
+    if (!districtId) return;
+    loadRegions(`${regionApiBaseUrl}/villages/${districtId}.json`, []).then(setVillages);
+  }, [districtId]);
 
   function updateFormReady(form: HTMLFormElement) {
     window.setTimeout(() => setFormReady(form.checkValidity()), 0);
@@ -57,13 +82,75 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
     event.currentTarget.reset();
     setShirtSize("M");
     setCityRegency("");
+    setDistrict("");
+    setVillage("");
     setProvince("");
     setPostalCode("");
+    setProvinceId("");
+    setRegencyId("");
+    setDistrictId("");
+    setRegencies([]);
+    setDistricts([]);
+    setVillages([]);
+    setPostalCodeStatus("");
     setFormReady(false);
+  }
+
+  function handleProvinceChange(nextProvinceId: string) {
+    const selected = provinces.find((item) => item.id === nextProvinceId);
+    setProvinceId(nextProvinceId);
+    setProvince(selected?.name || "");
+    setRegencyId("");
+    setDistrictId("");
+    setCityRegency("");
+    setDistrict("");
+    setVillage("");
+    setPostalCode("");
+    setPostalCodeStatus("");
+    setRegencies([]);
+    setDistricts([]);
+    setVillages([]);
+  }
+
+  function handleRegencyChange(nextRegencyId: string) {
+    const selected = regencies.find((item) => item.id === nextRegencyId);
+    setRegencyId(nextRegencyId);
+    setCityRegency(selected?.name || "");
+    setDistrictId("");
+    setDistrict("");
+    setVillage("");
+    setPostalCode("");
+    setPostalCodeStatus("");
+    setDistricts([]);
+    setVillages([]);
+  }
+
+  function handleDistrictChange(nextDistrictId: string) {
+    const selected = districts.find((item) => item.id === nextDistrictId);
+    setDistrictId(nextDistrictId);
+    setDistrict(selected?.name || "");
+    setVillage("");
+    setPostalCode("");
+    setPostalCodeStatus("");
+    setVillages([]);
+  }
+
+  async function handleVillageChange(nextVillage: string) {
+    setVillage(nextVillage);
+    setPostalCode("");
+    setPostalCodeStatus("Mencari kode pos...");
+    const nextPostalCode = await findPostalCode([nextVillage, district, cityRegency, province]);
+    if (nextPostalCode) {
+      setPostalCode(nextPostalCode);
+      setPostalCodeStatus("Kode pos terisi otomatis.");
+    } else {
+      setPostalCodeStatus("Kode pos belum ditemukan otomatis, silakan isi manual.");
+    }
   }
 
   return (
     <form
+      ref={formRef}
       className="registration-form"
       onInput={(event) => updateFormReady(event.currentTarget)}
       onChange={(event) => updateFormReady(event.currentTarget)}
@@ -147,36 +234,45 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
 
       <label>Alamat lengkap <textarea required name="address" placeholder="Alamat lengkap pengiriman" /></label>
       <div className="three-col">
-        <label>Kelurahan <input required name="village" /></label>
-        <label>Kecamatan <input required name="district" /></label>
+        <label>Provinsi
+          <select required value={provinceId} onChange={(event) => handleProvinceChange(event.target.value)}>
+            <option value="">Pilih provinsi</option>
+            {provinces.map((item) => <option key={item.id} value={item.id}>{toTitleCase(item.name)}</option>)}
+          </select>
+          <input type="hidden" name="province" value={province} />
+        </label>
         <label>Kota/Kabupaten
-          <input
-            required
-            name="city_regency"
-            list="indonesia-cities"
-            value={cityRegency}
-            onChange={(event) => applyAddressSuggestion(event.target.value)}
-            autoComplete="address-level2"
-            placeholder="Pilih/ketik kota atau kabupaten"
-          />
+          <select required value={regencyId} onChange={(event) => handleRegencyChange(event.target.value)} disabled={!provinceId}>
+            <option value="">{provinceId ? "Pilih kota/kabupaten" : "Pilih provinsi dulu"}</option>
+            {regencies.map((item) => <option key={item.id} value={item.id}>{toTitleCase(item.name)}</option>)}
+          </select>
+          <input type="hidden" name="city_regency" value={cityRegency} />
+        </label>
+        <label>Kecamatan
+          <select required value={districtId} onChange={(event) => handleDistrictChange(event.target.value)} disabled={!regencyId}>
+            <option value="">{regencyId ? "Pilih kecamatan" : "Pilih kota dulu"}</option>
+            {districts.map((item) => <option key={item.id} value={item.id}>{toTitleCase(item.name)}</option>)}
+          </select>
+          <input type="hidden" name="district" value={district} />
         </label>
       </div>
       <div className="three-col">
-        <label>Provinsi
-          <input
-            required
-            name="province"
-            value={province}
-            onChange={(event) => setProvince(event.target.value)}
-            autoComplete="address-level1"
-          />
+        <label>Kelurahan
+          <select required value={village} onChange={(event) => handleVillageChange(event.target.value)} disabled={!districtId}>
+            <option value="">{districtId ? "Pilih kelurahan" : "Pilih kecamatan dulu"}</option>
+            {villages.map((item) => <option key={item.id} value={item.name}>{toTitleCase(item.name)}</option>)}
+          </select>
+          <input type="hidden" name="village" value={village} />
         </label>
         <label>Kode pos
           <input
             required
             name="postal_code"
             value={postalCode}
-            onChange={(event) => setPostalCode(event.target.value.replace(/\D/g, "").slice(0, 5))}
+            onChange={(event) => {
+              setPostalCode(event.target.value.replace(/\D/g, "").slice(0, 5));
+              setPostalCodeStatus("");
+            }}
             inputMode="numeric"
             pattern="[0-9]{5}"
             minLength={5}
@@ -184,16 +280,10 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
             title="Kode pos harus 5 digit angka."
             autoComplete="postal-code"
           />
+          {postalCodeStatus ? <small>{postalCodeStatus}</small> : null}
         </label>
         <label>Catatan alamat <input name="address_notes" placeholder="Patokan, warna pagar, dll." /></label>
       </div>
-      <datalist id="indonesia-cities">
-        {indonesiaAddressOptions.map((item) => (
-          <option key={`${item.city}-${item.postalCode}`} value={item.city}>
-            {item.province} - {item.postalCode}
-          </option>
-        ))}
-      </datalist>
 
       <div className="size-chart">
         <strong>Size chart</strong>
@@ -242,4 +332,42 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
       {participantUrl ? <a className="button secondary full" href={participantUrl}>Buka link unik peserta</a> : null}
     </form>
   );
+}
+
+async function loadRegions(url: string, fallback: RegionOption[]) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) return fallback;
+    const data = await response.json();
+    if (!Array.isArray(data)) return fallback;
+    return data.map((item) => ({ id: String(item.id), name: String(item.name) }));
+  } catch {
+    return fallback;
+  }
+}
+
+async function findPostalCode(parts: string[]) {
+  const query = parts.filter(Boolean).join(" ");
+  if (!query) return "";
+
+  try {
+    const response = await fetch(`${postalCodeApiUrl}?q=${encodeURIComponent(query)}`);
+    if (!response.ok) return "";
+    const data = await response.json();
+    const rows = Array.isArray(data) ? data : Array.isArray(data.data) ? data.data : Array.isArray(data.results) ? data.results : [];
+    const first = rows[0];
+    if (!first) return "";
+    const code = first.postalcode || first.postal_code || first.kodepos || first.kode_pos || first.code || "";
+    return String(code).replace(/\D/g, "").slice(0, 5);
+  } catch {
+    return "";
+  }
+}
+
+function toTitleCase(value: string) {
+  return value
+    .toLowerCase()
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
