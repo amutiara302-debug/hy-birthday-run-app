@@ -18,7 +18,7 @@ export default function RegisterPage({ searchParams }: { searchParams: { categor
             <strong>Pembayaran manual</strong>
             <span>Upload bukti pembayaran saat mendaftar.</span>
             <span>{`Nomor rekening: ${defaultSettings.bankAccountNumber} (${defaultSettings.bankName}) a/n ${defaultSettings.accountHolder}`}</span>
-            <small>BIB dibuat otomatis setelah admin memverifikasi pembayaran.</small>
+            <small>Pembayaran akan dicek manual oleh admin setelah bukti pembayaran diterima.</small>
           </div>
         </div>
         <RegisterForm initialCategory={initialCategory} />

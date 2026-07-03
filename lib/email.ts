@@ -34,7 +34,7 @@ export function registrationEmail(name: string, participantUrl: string) {
       <h1>HY Birthday Run 58</h1>
       <p>Halo ${name},</p>
       <p>Pendaftaran diterima, sampai ketemu di tanggal 30 Agustus.</p>
-      <p>Gunakan link unik berikut untuk melihat status pendaftaran, BIB, resi pengiriman, dan upload bukti lari virtual jika kamu memilih kategori virtual.</p>
+      <p>Gunakan link unik berikut untuk melihat status pendaftaran, resi pengiriman, dan upload bukti lari virtual jika kamu memilih kategori virtual.</p>
       <p><a href="${participantUrl}">${participantUrl}</a></p>
       <p>Salam sehat,<br>Panitia HY Birthday Run</p>
     </div>

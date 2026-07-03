@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { defaultSettings, formatRupiah, getRegistrationTotal } from "@/lib/config";
 import type { Registration, RunSubmission } from "@/lib/types";
 
 type AdminData = {
@@ -58,6 +59,14 @@ export default function AdminPanel() {
   const pendingPayments = registrations.filter((item) => item.payment_status === "pending").length;
   const verified = registrations.filter((item) => item.payment_status === "verified").length;
   const pendingRuns = data?.runSubmissions.filter((item) => item.status === "review").length || 0;
+  const offlineCount = registrations.filter((item) => item.category === "Offline").length;
+  const virtualCount = registrations.filter((item) => item.category === "Virtual").length;
+  const estimatedRevenue = registrations
+    .filter((item) => item.payment_status === "verified")
+    .reduce((total, item) => total + getRegistrationTotal(item.category, item.shirt_size), 0);
+  const pendingRevenue = registrations
+    .filter((item) => item.payment_status === "pending")
+    .reduce((total, item) => total + getRegistrationTotal(item.category, item.shirt_size), 0);
 
   return (
     <main className="page-shell">
@@ -74,30 +83,56 @@ export default function AdminPanel() {
         </form>
       ) : (
         <div className="admin-stack">
-          <div className="metric-grid">
-            <div><span>Pendaftar</span><strong>{registrations.length}</strong></div>
-            <div><span>Menunggu pembayaran</span><strong>{pendingPayments}</strong></div>
-            <div><span>Terverifikasi</span><strong>{verified}</strong></div>
-            <div><span>Bukti lari review</span><strong>{pendingRuns}</strong></div>
+          <div className="dashboard-summary">
+            <article className="summary-card green"><span>Transaction</span><strong>{registrations.length}</strong><small>Total pendaftar</small></article>
+            <article className="summary-card cyan"><span>Paid</span><strong>{verified}</strong><small>{formatRupiah(estimatedRevenue)}</small></article>
+            <article className="summary-card amber"><span>Pending</span><strong>{pendingPayments}</strong><small>{formatRupiah(pendingRevenue)}</small></article>
+            <article className="summary-card red"><span>Run Review</span><strong>{pendingRuns}</strong><small>Bukti lari virtual</small></article>
           </div>
+
+          <section className="admin-card dashboard-card">
+            <div className="table-heading">
+              <h2>HY Birthday Run 58 - Recap Summary</h2>
+              <button className="button secondary" onClick={() => exportCsv(registrations)}>Export CSV</button>
+            </div>
+            <div className="recap-grid">
+              <div className="recap-chart">
+                <div style={{ height: `${Math.min(100, registrations.length * 2)}%` }}><span>Total</span></div>
+                <div style={{ height: `${Math.min(100, verified * 2)}%` }}><span>Paid</span></div>
+                <div style={{ height: `${Math.min(100, pendingPayments * 2)}%` }}><span>Pending</span></div>
+                <div style={{ height: `${Math.min(100, pendingRuns * 2)}%` }}><span>Review</span></div>
+              </div>
+              <div className="goal-list">
+                <h3>Goal Category</h3>
+                <Progress label="Offline Run" value={offlineCount} total={defaultSettings.offlineQuota} />
+                <Progress label="Virtual Run" value={virtualCount} total={defaultSettings.virtualQuota} />
+              </div>
+            </div>
+            <div className="summary-totals">
+              <div><strong>{formatRupiah(estimatedRevenue)}</strong><span>Total revenue verified</span></div>
+              <div><strong>{offlineCount}</strong><span>Offline participants</span></div>
+              <div><strong>{virtualCount}</strong><span>Virtual participants</span></div>
+              <div><strong>{registrations.length}</strong><span>Total participants</span></div>
+            </div>
+          </section>
 
           <section className="admin-card">
             <div className="table-heading">
               <h2>Pendaftar</h2>
-              <button className="button secondary" onClick={() => exportCsv(registrations)}>Export CSV</button>
             </div>
             <div className="responsive-table">
               <table>
                 <thead>
-                  <tr><th>Nama</th><th>Kategori</th><th>Bayar</th><th>BIB</th><th>Resi</th><th>Aksi</th></tr>
+                  <tr><th>Nama</th><th>Kategori</th><th>Size</th><th>Total</th><th>Bayar</th><th>Resi</th><th>Aksi</th></tr>
                 </thead>
                 <tbody>
                   {registrations.map((item) => (
                     <tr key={item.id}>
                       <td>{item.full_name}<br /><small>{item.email}</small></td>
                       <td>{item.category}</td>
+                      <td>{item.shirt_size}</td>
+                      <td>{formatRupiah(getRegistrationTotal(item.category, item.shirt_size))}</td>
                       <td>{item.payment_status}</td>
-                      <td>{item.bib_number || "-"}</td>
                       <td>
                         <input
                           aria-label={`Resi ${item.full_name}`}
@@ -143,16 +178,26 @@ export default function AdminPanel() {
   );
 }
 
+function Progress({ label, value, total }: { label: string; value: number; total: number }) {
+  const percent = total ? Math.min(100, Math.round((value / total) * 100)) : 0;
+  return (
+    <div className="goal-row">
+      <div><strong>{label}</strong><span>{value}/{total}</span></div>
+      <div className="goal-track"><span style={{ width: `${percent}%` }} /></div>
+    </div>
+  );
+}
+
 function exportCsv(rows: Registration[]) {
-  const headers = ["Nama", "Email", "Kategori", "Telepon", "Size", "Pembayaran", "BIB", "Resi"];
+  const headers = ["Nama", "Email", "Kategori", "Telepon", "Size", "Total", "Pembayaran", "Resi"];
   const lines = rows.map((row) => [
     row.full_name,
     row.email,
     row.category,
     row.phone,
     row.shirt_size,
+    getRegistrationTotal(row.category, row.shirt_size),
     row.payment_status,
-    row.bib_number || "",
     row.tracking_number || ""
   ]);
   const csv = [headers, ...lines].map((line) => line.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")).join("\n");

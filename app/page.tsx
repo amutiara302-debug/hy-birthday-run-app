@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { defaultSettings, formatRupiah } from "@/lib/config";
+import { defaultSettings, formatRupiah, premiumShirtFee } from "@/lib/config";
 
 export default function HomePage() {
   return (
@@ -52,7 +52,7 @@ export default function HomePage() {
         <section id="info" className="section white">
           <div className="section-heading">
             <p className="eyebrow">Informasi Acara</p>
-            <h2>Sehat bersama, merayakan HY 58</h2>
+            <h2>Sehat bersama Hedi Yunus Birthday Run 58</h2>
           </div>
           <div className="info-grid">
             <article>
@@ -71,6 +71,17 @@ export default function HomePage() {
               <p>Jersey dan medali dikirim ke peserta offline dan virtual. Resi dapat dilihat melalui link unik.</p>
             </article>
           </div>
+          <article className="location-card">
+            <div className="map-preview">
+              <span className="map-pin">Gudda Coffee</span>
+            </div>
+            <div>
+              <p className="eyebrow">Lokasi Offline</p>
+              <h3>{defaultSettings.offlineLocation}</h3>
+              <p>{defaultSettings.offlineAddress}</p>
+              <a className="button secondary" href={defaultSettings.mapDirectionUrl} target="_blank" rel="noreferrer">Buka Direction</a>
+            </div>
+          </article>
         </section>
 
         <section id="kategori" className="section">
@@ -83,6 +94,7 @@ export default function HomePage() {
               <div className="category-top"><span className="pill">Offline</span><span>Kuota 325</span></div>
               <h3>Offline Run 5,8KM</h3>
               <p className="price">{formatRupiah(defaultSettings.offlinePrice)} <small>+ ongkir {formatRupiah(defaultSettings.shippingFee)}</small></p>
+              <p className="muted">Size 3XL-5XL tambah {formatRupiah(premiumShirtFee)}.</p>
               <ul>
                 <li>Jersey</li>
                 <li>Medali finisher</li>
@@ -95,6 +107,7 @@ export default function HomePage() {
               <div className="category-top"><span className="pill">Virtual</span><span>Kuota 75</span></div>
               <h3>Virtual Run 5,8KM</h3>
               <p className="price">{formatRupiah(defaultSettings.virtualPrice)} <small>+ ongkir {formatRupiah(defaultSettings.shippingFee)}</small></p>
+              <p className="muted">Size 3XL-5XL tambah {formatRupiah(premiumShirtFee)}.</p>
               <ul>
                 <li>Jersey</li>
                 <li>Medali</li>

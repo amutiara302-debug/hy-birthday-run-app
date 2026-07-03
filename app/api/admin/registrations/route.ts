@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import type { Category, Registration } from "@/lib/types";
 
 export async function GET(request: NextRequest) {
   if (!isAdminRequest(request)) {
@@ -33,22 +32,12 @@ export async function PATCH(request: NextRequest) {
   const supabase = getSupabaseAdmin();
 
   if (body.action === "verify_payment") {
-    const { data: registration, error } = await supabase
-      .from("registrations")
-      .select("*")
-      .eq("id", body.id)
-      .single<Registration>();
-    if (error || !registration) {
-      return NextResponse.json({ error: "Peserta tidak ditemukan." }, { status: 404 });
-    }
-
-    const bibNumber = registration.bib_number || await nextBibNumber(registration.category, supabase);
     const { error: updateError } = await supabase
       .from("registrations")
-      .update({ payment_status: "verified", bib_number: bibNumber })
+      .update({ payment_status: "verified" })
       .eq("id", body.id);
     if (updateError) throw updateError;
-    return NextResponse.json({ ok: true, bibNumber });
+    return NextResponse.json({ ok: true });
   }
 
   if (body.action === "save_tracking") {
@@ -61,15 +50,4 @@ export async function PATCH(request: NextRequest) {
   }
 
   return NextResponse.json({ error: "Aksi tidak valid." }, { status: 400 });
-}
-
-async function nextBibNumber(category: Category, supabase: ReturnType<typeof getSupabaseAdmin>) {
-  const prefix = category === "Offline" ? "HY58-O" : "HY58-V";
-  const { count, error } = await supabase
-    .from("registrations")
-    .select("id", { count: "exact", head: true })
-    .eq("category", category)
-    .not("bib_number", "is", null);
-  if (error) throw error;
-  return `${prefix}-${String((count || 0) + 1).padStart(3, "0")}`;
 }

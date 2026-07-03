@@ -37,7 +37,6 @@ export default function ParticipantPortal({
           <h1>{registration.full_name}</h1>
           <dl>
             <div><dt>Status pembayaran</dt><dd>{registration.payment_status}</dd></div>
-            <div><dt>BIB</dt><dd>{registration.bib_number || "Belum tersedia"}</dd></div>
             <div><dt>Status pengiriman</dt><dd>{registration.shipping_status}</dd></div>
             <div><dt>Resi</dt><dd>{registration.tracking_number || "Belum tersedia"}</dd></div>
             <div><dt>Status virtual</dt><dd>{registration.run_status}</dd></div>
@@ -65,7 +64,7 @@ export default function ParticipantPortal({
           <article className="status-panel">
             <p className="eyebrow">Offline Run</p>
             <h2>Sampai ketemu 30 Agustus</h2>
-            <p>Peserta offline tidak perlu upload bukti lari. Simpan link ini untuk mengecek BIB dan resi pengiriman.</p>
+            <p>Peserta offline tidak perlu upload bukti lari. Simpan link ini untuk mengecek status pembayaran dan resi pengiriman.</p>
           </article>
         )}
       </section>

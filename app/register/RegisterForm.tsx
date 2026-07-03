@@ -1,17 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { categoryPrices, defaultSettings, formatRupiah } from "@/lib/config";
+import { defaultSettings, formatRupiah, getRegistrationTotal, getShirtSurcharge, premiumShirtFee, shirtSizes } from "@/lib/config";
 import type { Category } from "@/lib/types";
-
-const shirtSizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
 export default function RegisterForm({ initialCategory }: { initialCategory: Category }) {
   const [category, setCategory] = useState<Category>(initialCategory);
+  const [shirtSize, setShirtSize] = useState("M");
   const [message, setMessage] = useState("");
   const [participantUrl, setParticipantUrl] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const total = useMemo(() => categoryPrices[category], [category]);
+  const shirtSurcharge = useMemo(() => getShirtSurcharge(shirtSize), [shirtSize]);
+  const total = useMemo(() => getRegistrationTotal(category, shirtSize), [category, shirtSize]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -83,7 +83,7 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
 
       <div className="two-col">
         <label>Size jersey/kaos
-          <select required name="shirt_size">
+          <select required name="shirt_size" value={shirtSize} onChange={(event) => setShirtSize(event.target.value)}>
             {shirtSizes.map((size) => <option key={size}>{size}</option>)}
           </select>
         </label>
@@ -105,7 +105,33 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
       <div className="size-chart">
         <strong>Size chart</strong>
         <div className="size-row">{shirtSizes.map((size) => <span key={size}>{size}</span>)}</div>
-        <small>Ukuran detail dapat diedit admin ketika chart resmi sudah tersedia.</small>
+        <small>Size 3XL, 4XL, dan 5XL dikenakan tambahan {formatRupiah(premiumShirtFee)}.</small>
+        <div className="size-table-wrap">
+          <table className="size-table">
+            <thead>
+              <tr>
+                <th>Ukuran</th>
+                <th>XS</th>
+                <th>S</th>
+                <th>M</th>
+                <th>L</th>
+                <th>XL</th>
+                <th>XXL</th>
+                <th>3XL</th>
+                <th>4XL</th>
+                <th>5XL</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><th>A Lebar dada</th><td>48</td><td>50</td><td>52</td><td>54</td><td>56</td><td>58</td><td>60</td><td>62</td><td>64</td></tr>
+              <tr><th>B Panjang baju</th><td>62</td><td>64</td><td>66</td><td>68</td><td>70</td><td>72</td><td>74</td><td>76</td><td>78</td></tr>
+              <tr><th>C Panjang tangan</th><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td></tr>
+              <tr><th>D Lingkar leher</th><td>18</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td></tr>
+              <tr><th>E Lingkar tangan bawah</th><td>30</td><td>31</td><td>32</td><td>33</td><td>34</td><td>35</td><td>36</td><td>37</td><td>38</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <small>Semua ukuran dalam centimeter, toleransi manual 1 - 1,5 cm.</small>
       </div>
 
       <label className="check-row"><input required name="truth_consent" type="checkbox" /> Data yang saya isi benar.</label>
@@ -116,6 +142,7 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
         <span>Total pembayaran</span>
         <strong>{formatRupiah(total)}</strong>
       </div>
+      {shirtSurcharge > 0 ? <p className="muted">Termasuk tambahan size {shirtSize}: {formatRupiah(shirtSurcharge)}.</p> : null}
       <p className="muted">Transfer ke rekening {defaultSettings.bankName} {defaultSettings.bankAccountNumber} a/n {defaultSettings.accountHolder}.</p>
       <button className="button primary full" disabled={submitting} type="submit">{submitting ? "Mengirim..." : "Submit Pendaftaran"}</button>
       {message ? <p className="form-message">{message}</p> : null}
