@@ -37,6 +37,7 @@ export function registrationEmail(name: string, participantUrl: string, particip
       <p>Kode unik peserta kamu: <strong>${participantCode}</strong></p>
       <p>Gunakan link unik berikut untuk melihat status pendaftaran, resi pengiriman, dan upload bukti lari virtual jika kamu memilih kategori virtual.</p>
       <p><a href="${participantUrl}">${participantUrl}</a></p>
+      <p>Verifikasi pembayaran pada pendaftaran paling lambat membutuhkan waktu 24 jam. Silakan melakukan pengecekan rutin dengan menggunakan kode unik anda.</p>
       <p>Salam sehat,<br>Panitia HY Birthday Run</p>
     </div>
   `;
