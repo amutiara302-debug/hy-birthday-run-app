@@ -228,6 +228,28 @@ nav a { text-decoration: none; }
 .steps span { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: 12px; color: #fff; background: var(--plum); border-radius: 8px; font-weight: 800; }
 .contact-band { display: flex; align-items: center; justify-content: space-between; gap: 24px; color: #fff; background: var(--plum); }
 .contact-band .eyebrow, .contact-band a { color: #fff; }
+.sponsor-section {
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.95), rgba(250,246,255,.96)),
+    url("/purple-pattern.png") center / 260px;
+}
+.sponsor-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 18px;
+}
+.sponsor-placeholder {
+  display: grid;
+  place-items: center;
+  min-height: 138px;
+  padding: 24px;
+  color: var(--muted);
+  background: rgba(255,255,255,.9);
+  border: 1px dashed #cfb9e4;
+  border-radius: 8px;
+  font-weight: 900;
+  text-align: center;
+}
 .location-card {
   display: grid;
   grid-template-columns: minmax(260px, .8fr) minmax(280px, 1fr);
@@ -371,13 +393,13 @@ td button { min-height: 36px; }
   .hero { min-height: auto; }
   .hero::before { width: 100%; opacity: .22; }
   .runner-card { min-height: 420px; }
-  .info-grid, .steps, .metric-grid, .dashboard-summary, .summary-totals { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .info-grid, .steps, .metric-grid, .dashboard-summary, .summary-totals, .sponsor-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }
 
 @media (max-width: 680px) {
   .site-header { align-items: flex-start; flex-direction: column; }
   .site-header .button { width: 100%; }
-  .quick-facts, .info-grid, .category-grid, .steps, .two-col, .three-col, .metric-grid, .dashboard-summary, .summary-totals { grid-template-columns: 1fr; }
+  .quick-facts, .info-grid, .category-grid, .steps, .two-col, .three-col, .metric-grid, .dashboard-summary, .summary-totals, .sponsor-grid { grid-template-columns: 1fr; }
   .size-row { grid-template-columns: repeat(3, minmax(34px,1fr)); }
   .hero-actions, .contact-band, .table-heading { align-items: stretch; flex-direction: column; }
   .runner-card { min-height: 360px; }

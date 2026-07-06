@@ -13,7 +13,7 @@ export default function RegisterPage({ searchParams }: { searchParams: { categor
         <div>
           <p className="eyebrow">Form Pendaftaran</p>
           <h1>Daftar HY Birthday Run 58</h1>
-          <p className="tagline">Pendaftaran dibuka 7 Juli 2026 dan ditutup 31 Juli 2026. Jika kuota penuh, kategori akan otomatis ditutup.</p>
+          <p className="tagline">Pendaftaran dibuka 7 Juli 2026 pukul 16.00 WIB dan ditutup 31 Juli 2026 pukul 11.59 WIB. Jika kuota penuh, kategori akan otomatis ditutup.</p>
           <div className="payment-box">
             <strong>Pembayaran manual</strong>
             <span>Upload bukti pembayaran saat mendaftar.</span>

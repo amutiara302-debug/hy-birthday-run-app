@@ -15,6 +15,7 @@ export default function HomePage() {
         <nav>
           <a href="#info">Informasi</a>
           <a href="#kategori">Kategori</a>
+          <a href="#sponsor">Sponsor</a>
           <Link href="/register">Daftar</Link>
           <Link href="/admin">Admin</Link>
         </nav>
@@ -71,7 +72,7 @@ export default function HomePage() {
             <article>
               <span>Offline Run</span>
               <h3>{defaultSettings.offlineLocation}</h3>
-              <p>Acara offline berlangsung pada {defaultSettings.offlineEventDate} dengan refreshment dan kesempatan meet & greet.</p>
+              <p>Acara offline dilaksanakan tanggal 30 Agustus 2026 jam 06.00 pagi. Disediakan refreshment dan kesempatan meet and greet.</p>
             </article>
             <article>
               <span>Virtual Run</span>
@@ -140,6 +141,19 @@ export default function HomePage() {
             <div><span>2</span><strong>Isi data</strong><p>Lengkapi data peserta, alamat, dan ukuran jersey.</p></div>
             <div><span>3</span><strong>Upload bukti bayar</strong><p>Transfer ke {defaultSettings.bankName} {defaultSettings.bankAccountNumber} a/n {defaultSettings.accountHolder}.</p></div>
             <div><span>4</span><strong>Cek email</strong><p>Link unik dikirim tanpa perlu login peserta.</p></div>
+          </div>
+        </section>
+
+        <section id="sponsor" className="section sponsor-section">
+          <div className="section-heading">
+            <p className="eyebrow">Sponsor</p>
+            <h2>Didukung Oleh</h2>
+            <p className="section-subtitle">Area ini disiapkan untuk logo dan nama sponsor HY Birthday Run 58.</p>
+          </div>
+          <div className="sponsor-grid">
+            <article className="sponsor-placeholder">Sponsor Utama</article>
+            <article className="sponsor-placeholder">Partner</article>
+            <article className="sponsor-placeholder">Community Partner</article>
           </div>
         </section>
 

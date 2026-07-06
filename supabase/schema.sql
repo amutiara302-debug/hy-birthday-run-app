@@ -70,8 +70,8 @@ create table if not exists event_settings (
   shipping_fee int not null default 15000,
   offline_quota int not null default 325,
   virtual_quota int not null default 75,
-  registration_opens_at timestamptz not null default '2026-07-07 00:00:00+07',
-  registration_closes_at timestamptz not null default '2026-07-31 23:59:59+07',
+  registration_opens_at timestamptz not null default '2026-07-07 16:00:00+07',
+  registration_closes_at timestamptz not null default '2026-07-31 11:59:00+07',
   constraint singleton_settings check (id = 1)
 );
 
