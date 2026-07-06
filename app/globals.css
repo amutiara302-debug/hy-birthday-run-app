@@ -195,34 +195,9 @@ nav a { text-decoration: none; }
   min-height: 260px;
   overflow: hidden;
   border-radius: 8px;
-  background:
-    linear-gradient(90deg, transparent 47%, rgba(124,43,189,.22) 48% 52%, transparent 53%),
-    linear-gradient(0deg, transparent 47%, rgba(20,98,79,.18) 48% 52%, transparent 53%),
-    repeating-linear-gradient(45deg, #efe8f5 0 18px, #fff 18px 36px);
   border: 1px solid #d9cde8;
 }
-.map-preview::before,
-.map-preview::after {
-  content: "";
-  position: absolute;
-  border-radius: 999px;
-  background: rgba(246,198,96,.78);
-}
-.map-preview::before { width: 68%; height: 18px; left: 14%; top: 34%; transform: rotate(-12deg); }
-.map-preview::after { width: 56%; height: 14px; right: 10%; bottom: 30%; transform: rotate(22deg); }
-.map-pin {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 1;
-  transform: translate(-50%, -50%);
-  padding: 10px 14px;
-  color: #fff;
-  background: var(--plum);
-  border-radius: 8px;
-  box-shadow: var(--shadow);
-  font-weight: 900;
-}
+.map-preview img { width: 100%; height: 100%; min-height: 260px; object-fit: cover; display: block; }
 
 .registration-layout { display: grid; grid-template-columns: minmax(260px,.55fr) minmax(320px,1fr); gap: 28px; align-items: start; }
 .back-link { display: inline-block; margin-bottom: 28px; color: var(--purple); font-weight: 800; text-decoration: none; }
@@ -272,8 +247,8 @@ dd { margin: 0; font-weight: 800; }
   border-radius: 8px;
   box-shadow: 0 16px 34px rgba(23,18,31,.12);
 }
-.summary-card span { font-size: 18px; font-weight: 900; text-transform: uppercase; }
-.summary-card strong { font-size: 34px; line-height: 1; }
+.summary-card span { font-size: 17px; font-weight: 900; text-transform: uppercase; }
+.summary-card strong { font-size: clamp(24px, 2.4vw, 34px); line-height: 1.08; overflow-wrap: anywhere; }
 .summary-card small { color: rgba(255,255,255,.9); font-size: 16px; font-weight: 800; }
 .summary-card.green { background: #0aa462; }
 .summary-card.cyan { background: #12b7d8; }
@@ -313,6 +288,18 @@ dd { margin: 0; font-weight: 800; }
 .goal-row span { color: var(--muted); font-weight: 900; }
 .goal-track { height: 18px; overflow: hidden; background: #f1edf5; border-radius: 999px; }
 .goal-track span { display: block; height: 100%; background: linear-gradient(90deg, #12b7d8, #0aa462); border-radius: inherit; }
+.payment-split {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  background: #fbf8fd;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.payment-split span { color: var(--muted); font-size: 13px; font-weight: 900; }
+.payment-split b { color: var(--plum); }
 .summary-totals { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 1px; background: var(--line); border-radius: 8px; overflow: hidden; }
 .summary-totals div { display: grid; gap: 4px; padding: 18px; background: #fff; text-align: center; }
 .summary-totals strong { color: var(--plum); font-size: 24px; }

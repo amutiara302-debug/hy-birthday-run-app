@@ -39,6 +39,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Mohon lengkapi semua data wajib sebelum submit." }, { status: 400 });
     }
 
+    if (!isValidEmail(value(formData, "email"))) {
+      return NextResponse.json({ error: "Format email harus benar dan menggunakan @." }, { status: 400 });
+    }
+
     if (!isValidPhone(value(formData, "phone")) || (category === "Offline" && !isValidPhone(value(formData, "emergency_phone")))) {
       return NextResponse.json({ error: "Nomor telepon harus diawali 0 dan berisi angka 10-12 digit." }, { status: 400 });
     }
@@ -138,6 +142,10 @@ function nullableValue(formData: FormData, key: string) {
 
 function isValidPhone(phone: string) {
   return /^0\d{9,11}$/.test(phone);
+}
+
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
 function isAllowedProofFile(file: File) {

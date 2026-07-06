@@ -75,7 +75,7 @@ export default function HomePage() {
           </div>
           <article className="location-card">
             <div className="map-preview">
-              <span className="map-pin">Gudda Coffee</span>
+              <img src="/gudda-coffee-map.png" alt="Peta lokasi Gudda Coffee" />
             </div>
             <div>
               <p className="eyebrow">Lokasi Offline</p>

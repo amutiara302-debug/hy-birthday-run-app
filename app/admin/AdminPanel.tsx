@@ -59,9 +59,18 @@ export default function AdminPanel() {
   const pendingPayments = registrations.filter((item) => item.payment_status === "pending").length;
   const verified = registrations.filter((item) => item.payment_status === "verified").length;
   const pendingRuns = data?.runSubmissions.filter((item) => item.status === "review").length || 0;
-  const offlineCount = registrations.filter((item) => item.category === "Offline").length;
-  const virtualCount = registrations.filter((item) => item.category === "Virtual").length;
-  const estimatedRevenue = registrations
+  const offlineRegistrations = registrations.filter((item) => item.category === "Offline");
+  const virtualRegistrations = registrations.filter((item) => item.category === "Virtual");
+  const offlineCount = offlineRegistrations.length;
+  const virtualCount = virtualRegistrations.length;
+  const offlineVerified = offlineRegistrations.filter((item) => item.payment_status === "verified").length;
+  const offlinePending = offlineRegistrations.filter((item) => item.payment_status === "pending").length;
+  const virtualVerified = virtualRegistrations.filter((item) => item.payment_status === "verified").length;
+  const virtualPending = virtualRegistrations.filter((item) => item.payment_status === "pending").length;
+  const notShipped = registrations.filter((item) => item.shipping_status !== "shipped").length;
+  const shipped = registrations.filter((item) => item.shipping_status === "shipped").length;
+  const estimatedRevenue = registrations.reduce((total, item) => total + getRegistrationTotal(item.category, item.shirt_size), 0);
+  const confirmedRevenue = registrations
     .filter((item) => item.payment_status === "verified")
     .reduce((total, item) => total + getRegistrationTotal(item.category, item.shirt_size), 0);
   const pendingRevenue = registrations
@@ -84,9 +93,9 @@ export default function AdminPanel() {
       ) : (
         <div className="admin-stack">
           <div className="dashboard-summary">
-            <article className="summary-card green"><span>Transaction</span><strong>{registrations.length}</strong><small>Total pendaftar</small></article>
-            <article className="summary-card cyan"><span>Paid</span><strong>{verified}</strong><small>{formatRupiah(estimatedRevenue)}</small></article>
-            <article className="summary-card amber"><span>Pending</span><strong>{pendingPayments}</strong><small>{formatRupiah(pendingRevenue)}</small></article>
+            <article className="summary-card green"><span>Total Pendaftar</span><strong>{registrations.length}</strong><small>Offline {offlineCount} / Virtual {virtualCount}</small></article>
+            <article className="summary-card cyan"><span>Uang Confirmed</span><strong>{formatRupiah(confirmedRevenue)}</strong><small>{verified} pembayaran verified</small></article>
+            <article className="summary-card amber"><span>Pending Payment</span><strong>{formatRupiah(pendingRevenue)}</strong><small>{pendingPayments} pembayaran pending</small></article>
             <article className="summary-card red"><span>Run Review</span><strong>{pendingRuns}</strong><small>Bukti lari virtual</small></article>
           </div>
 
@@ -103,16 +112,18 @@ export default function AdminPanel() {
                 <div style={{ height: `${Math.min(100, pendingRuns * 2)}%` }}><span>Review</span></div>
               </div>
               <div className="goal-list">
-                <h3>Goal Category</h3>
+                <h3>Category Status</h3>
                 <Progress label="Offline Run" value={offlineCount} total={defaultSettings.offlineQuota} />
+                <PaymentSplit label="Offline payment" verified={offlineVerified} pending={offlinePending} />
                 <Progress label="Virtual Run" value={virtualCount} total={defaultSettings.virtualQuota} />
+                <PaymentSplit label="Virtual payment" verified={virtualVerified} pending={virtualPending} />
               </div>
             </div>
             <div className="summary-totals">
-              <div><strong>{formatRupiah(estimatedRevenue)}</strong><span>Total revenue verified</span></div>
-              <div><strong>{offlineCount}</strong><span>Offline participants</span></div>
-              <div><strong>{virtualCount}</strong><span>Virtual participants</span></div>
-              <div><strong>{registrations.length}</strong><span>Total participants</span></div>
+              <div><strong>{formatRupiah(estimatedRevenue)}</strong><span>Estimasi revenue semua pendaftar</span></div>
+              <div><strong>{formatRupiah(confirmedRevenue)}</strong><span>Revenue confirmed/verified</span></div>
+              <div><strong>{notShipped}</strong><span>Paket belum dikirim</span></div>
+              <div><strong>{shipped}</strong><span>Paket sudah dikirim</span></div>
             </div>
           </section>
 
@@ -184,6 +195,16 @@ function Progress({ label, value, total }: { label: string; value: number; total
     <div className="goal-row">
       <div><strong>{label}</strong><span>{value}/{total}</span></div>
       <div className="goal-track"><span style={{ width: `${percent}%` }} /></div>
+    </div>
+  );
+}
+
+function PaymentSplit({ label, verified, pending }: { label: string; verified: number; pending: number }) {
+  return (
+    <div className="payment-split">
+      <strong>{label}</strong>
+      <span><b>{verified}</b> verified</span>
+      <span><b>{pending}</b> pending</span>
     </div>
   );
 }
