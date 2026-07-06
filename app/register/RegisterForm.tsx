@@ -11,6 +11,7 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
   const [shirtSize, setShirtSize] = useState("M");
   const [message, setMessage] = useState("");
   const [participantUrl, setParticipantUrl] = useState("");
+  const [participantCode, setParticipantCode] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [formReady, setFormReady] = useState(false);
   const [provinces, setProvinces] = useState<RegionOption[]>(fallbackProvinces);
@@ -61,6 +62,7 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
     setSubmitting(true);
     setMessage("");
     setParticipantUrl("");
+    setParticipantCode("");
 
     const formData = new FormData(event.currentTarget);
     formData.set("category", category);
@@ -78,6 +80,7 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
     }
 
     setParticipantUrl(result.participantUrl || "");
+    setParticipantCode(result.participantCode || "");
     setMessage("Pendaftaran diterima. Simpan link unik peserta di bawah ini.");
     event.currentTarget.reset();
     setShirtSize("M");
@@ -329,6 +332,12 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
       <p className="muted">Transfer ke rekening {defaultSettings.bankName} {defaultSettings.bankAccountNumber} a/n {defaultSettings.accountHolder}.</p>
       <button className="button primary full" disabled={submitting || !formReady} type="submit">{submitting ? "Mengirim..." : "Submit Pendaftaran"}</button>
       {message ? <p className="form-message">{message}</p> : null}
+      {participantCode ? (
+        <div className="success-code">
+          <span>Kode unik peserta</span>
+          <strong>{participantCode}</strong>
+        </div>
+      ) : null}
       {participantUrl ? <a className="button secondary full" href={participantUrl}>Buka link unik peserta</a> : null}
     </form>
   );

@@ -303,6 +303,18 @@ input:focus, select:focus, textarea:focus { border-color: var(--purple); box-sha
 .form-total { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 16px; color: #fff; background: var(--plum); border-radius: 8px; }
 .form-total strong { font-size: 24px; }
 .form-message { margin: 0; color: var(--mint-ink); font-weight: 800; }
+.success-code {
+  display: grid;
+  gap: 4px;
+  padding: 16px;
+  color: var(--plum);
+  background: #f4ecfb;
+  border: 1px solid #d7c4e8;
+  border-radius: 8px;
+  text-align: center;
+}
+.success-code span { color: var(--muted); font-size: 13px; font-weight: 900; text-transform: uppercase; }
+.success-code strong { font-size: 28px; letter-spacing: 0; }
 
 .status-panel dl { display: grid; gap: 10px; margin: 20px 0 0; }
 .status-panel dl div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }
