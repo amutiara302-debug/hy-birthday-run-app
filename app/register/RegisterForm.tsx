@@ -81,7 +81,7 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
 
     setParticipantUrl(result.participantUrl || "");
     setParticipantCode(result.participantCode || "");
-    setMessage("Pendaftaran HediYunu58irthdayRun Berhasil. Simpan link unik peserta di bawah ini.");
+    setMessage("Pendaftaran HY Burthday Run 58 telah Berhasil. Simpan link unik peserta di bawah ini.");
     event.currentTarget.reset();
     setShirtSize("M");
     setCityRegency("");
@@ -339,9 +339,6 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
         </div>
       ) : null}
       {participantUrl ? <a className="button secondary full" href={participantUrl}>Buka link unik peserta</a> : null}
-      {participantCode ? (
-        <p className="success-note">Verifikasi pembayaran pada pendaftaran paling lambat membutuhkan waktu 24 jam. Silakan melakukan pengecekan rutin dengan menggunakan kode unik anda.</p>
-      ) : null}
     </form>
   );
 }
