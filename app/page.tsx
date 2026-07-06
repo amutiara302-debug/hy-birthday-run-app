@@ -148,12 +148,11 @@ export default function HomePage() {
           <div className="section-heading">
             <p className="eyebrow">Sponsor</p>
             <h2>Didukung Oleh</h2>
-            <p className="section-subtitle">Area ini disiapkan untuk logo dan nama sponsor HY Birthday Run 58.</p>
           </div>
           <div className="sponsor-grid">
-            <article className="sponsor-placeholder">Sponsor Utama</article>
-            <article className="sponsor-placeholder">Partner</article>
-            <article className="sponsor-placeholder">Community Partner</article>
+            <article className="sponsor-placeholder" aria-label="Sponsor kosong" />
+            <article className="sponsor-placeholder" aria-label="Sponsor kosong" />
+            <article className="sponsor-placeholder" aria-label="Sponsor kosong" />
           </div>
         </section>
 
