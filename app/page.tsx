@@ -8,8 +8,8 @@ export default function HomePage() {
         <Link className="brand" href="/">
           <span className="brand-mark">HY</span>
           <span>
-            <strong>HY Birthday Run 58</strong>
-            <small>5,8KM Celebration Run</small>
+            <strong>HediYunu5 8irthdayRun</strong>
+            <small>#Headstrong Youthful</small>
           </span>
         </Link>
         <nav>
@@ -25,7 +25,7 @@ export default function HomePage() {
         <section className="hero">
           <div className="hero-media">
             <div className="runner-card">
-              <div className="editable-badge">Hedi Yunus Run</div>
+              <div className="editable-badge">HediYunu5 8irthdayRun</div>
               <div className="runner-portrait">
                 <div className="runner-sun" />
                 <img className="runner-photo" src="/hedi-run-cutout.png" alt="Hedi Yunus berlari" />
@@ -35,8 +35,9 @@ export default function HomePage() {
           </div>
           <div className="hero-copy">
             <p className="eyebrow">Ulang Tahun Hedi Yunus ke-58</p>
-            <h1>HY Birthday Run</h1>
-            <p className="tagline">Rayakan hari spesial dengan gerak sehat bersama fan base Hedi Yunus dan peserta umum.</p>
+            <h1>HediYunu5 8irthdayRun</h1>
+            <p className="tagline">Rayakan hari spesial dengan gerak sehat bersama teman teman Akang dan peserta umum.</p>
+            <p className="tagline-tags">#Headstrong Youthful&nbsp;&nbsp;#HY58</p>
             <div className="hero-actions">
               <Link className="button primary" href="/register">Daftar Sekarang</Link>
               <a className="button secondary" href="#kategori">Lihat Kategori</a>
@@ -53,6 +54,7 @@ export default function HomePage() {
           <div className="section-heading">
             <p className="eyebrow">Informasi Acara</p>
             <h2>Sehat bersama Hedi Yunus Birthday Run 58</h2>
+            <p className="section-subtitle">#Headstrong Youthful #HY58</p>
           </div>
           <div className="info-grid">
             <article>

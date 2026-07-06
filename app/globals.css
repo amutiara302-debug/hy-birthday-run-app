@@ -129,6 +129,13 @@ nav a { text-decoration: none; }
 .hero-copy { max-width: 690px; }
 .eyebrow { margin: 0 0 10px; color: var(--purple); font-size: 13px; font-weight: 800; text-transform: uppercase; }
 .tagline { max-width: 610px; color: #3e3549; font-size: 20px; }
+.tagline-tags, .section-subtitle {
+  margin-top: -4px;
+  color: var(--plum);
+  font-weight: 900;
+}
+.tagline-tags { font-size: 18px; }
+.section-subtitle { font-size: 17px; }
 .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 28px 0; }
 .quick-facts { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; max-width: 700px; }
 .quick-facts div, .info-grid article, .category-card, .payment-box, .registration-form, .status-panel, .upload-form, .login-panel, .admin-card {
