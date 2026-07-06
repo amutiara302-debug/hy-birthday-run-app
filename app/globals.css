@@ -74,22 +74,45 @@ nav a { text-decoration: none; }
 .button:disabled { opacity: .6; cursor: not-allowed; }
 
 .hero {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(320px, .92fr) minmax(320px, 1fr);
-  gap: clamp(28px, 5vw, 72px);
+  grid-template-columns: minmax(320px, .82fr) minmax(360px, 1.12fr);
+  gap: clamp(24px, 4vw, 58px);
   align-items: center;
   min-height: calc(100vh - 76px);
   padding: clamp(34px, 6vw, 82px) clamp(18px, 4vw, 56px) 52px;
-  background: linear-gradient(90deg, rgba(255,255,255,.88), rgba(255,255,255,.72)), url("/purple-pattern.png") center / 360px;
+  overflow: hidden;
+  background:
+    linear-gradient(105deg, rgba(255,255,255,.22), rgba(255,255,255,.78) 42%, rgba(255,255,255,.95) 64%, #fff 100%),
+    linear-gradient(135deg, #fdfbff, #f3e8f8 55%, #fff 100%);
+}
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 54%;
+  background: url("/purple-pattern.png") center / 310px;
+  opacity: .44;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.68) 45%, rgba(255,255,255,.94) 68%, #fff 100%);
 }
 .runner-card {
   position: relative;
   min-height: 500px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,.66);
-  border-radius: 8px;
-  background: linear-gradient(150deg, rgba(124,43,189,.18), rgba(246,198,96,.16)), url("/purple-pattern.png") center / 320px;
-  box-shadow: var(--shadow);
+  border: 1px solid rgba(222,210,236,.82);
+  border-radius: 12px;
+  background: rgba(255,255,255,.56);
+  box-shadow: 0 18px 44px rgba(43, 15, 63, .12);
+}
+.hero-media, .hero-copy {
+  position: relative;
+  z-index: 1;
 }
 .editable-badge {
   position: absolute;
@@ -103,14 +126,15 @@ nav a { text-decoration: none; }
   font-size: 12px;
   font-weight: 800;
 }
-.runner-portrait { position: absolute; inset: 54px 34px 0; display: grid; place-items: end center; }
-.runner-sun { position: absolute; top: 32px; right: 26px; width: 148px; height: 148px; background: var(--gold); border-radius: 50%; opacity: .9; }
+.runner-portrait { position: absolute; inset: 42px 22px 0; display: grid; place-items: end center; }
+.runner-sun { position: absolute; top: 36px; right: 0; width: 138px; height: 138px; background: var(--gold); border-radius: 50%; opacity: .78; }
 .runner-photo {
   position: relative;
   z-index: 1;
-  width: min(92%, 440px);
-  max-height: 460px;
+  width: min(96%, 455px);
+  max-height: 480px;
   object-fit: contain;
+  transform: translateX(-18px);
   filter: drop-shadow(0 22px 20px rgba(47, 18, 63, .28));
 }
 .runner-initials {
@@ -127,6 +151,13 @@ nav a { text-decoration: none; }
 }
 .runner-track { position: absolute; bottom: 44px; width: 78%; height: 18px; background: rgba(255,255,255,.74); border-radius: 999px; transform: rotate(-2deg); }
 .hero-copy { max-width: 690px; }
+.hero-copy h1 {
+  max-width: 660px;
+  color: var(--plum);
+  font-size: clamp(38px, 5.6vw, 76px);
+  line-height: .96;
+  overflow-wrap: anywhere;
+}
 .eyebrow { margin: 0 0 10px; color: var(--purple); font-size: 13px; font-weight: 800; text-transform: uppercase; }
 .tagline { max-width: 610px; color: #3e3549; font-size: 20px; }
 .tagline-tags, .section-subtitle {
@@ -150,6 +181,25 @@ nav a { text-decoration: none; }
 .section, .page-shell { padding: 76px clamp(18px, 4vw, 56px); }
 .white { background: #fff; }
 .section-heading { max-width: 820px; margin-bottom: 30px; }
+.story-section { padding-top: 70px; padding-bottom: 72px; }
+.story-copy {
+  display: grid;
+  gap: 16px;
+  max-width: 940px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 44px);
+  background: linear-gradient(135deg, #fff, #fbf6ff);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(51,21,77,.08);
+}
+.story-copy h2 { margin-bottom: 4px; }
+.story-copy p:not(.eyebrow) {
+  margin: 0;
+  color: #44374f;
+  font-size: 18px;
+  line-height: 1.72;
+}
 .info-grid, .category-grid, .steps, .participant-grid, .metric-grid {
   display: grid;
   gap: 18px;
@@ -319,6 +369,7 @@ td button { min-height: 36px; }
   nav { display: none; }
   .hero, .registration-layout, .participant-grid, .location-card, .recap-grid { grid-template-columns: 1fr; }
   .hero { min-height: auto; }
+  .hero::before { width: 100%; opacity: .22; }
   .runner-card { min-height: 420px; }
   .info-grid, .steps, .metric-grid, .dashboard-summary, .summary-totals { grid-template-columns: repeat(2, minmax(0,1fr)); }
 }

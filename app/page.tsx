@@ -25,7 +25,7 @@ export default function HomePage() {
         <section className="hero">
           <div className="hero-media">
             <div className="runner-card">
-              <div className="editable-badge">HediYunu5 8irthdayRun</div>
+              <div className="editable-badge">HediYunu58irthdayRun</div>
               <div className="runner-portrait">
                 <div className="runner-sun" />
                 <img className="runner-photo" src="/hedi-run-cutout.png" alt="Hedi Yunus berlari" />
@@ -35,7 +35,7 @@ export default function HomePage() {
           </div>
           <div className="hero-copy">
             <p className="eyebrow">Ulang Tahun Hedi Yunus ke-58</p>
-            <h1>HediYunu5 8irthdayRun</h1>
+            <h1>HediYunu58irthdayRun</h1>
             <p className="tagline">Rayakan hari spesial dengan gerak sehat bersama teman teman Akang dan peserta umum.</p>
             <p className="tagline-tags">#Headstrong Youthful&nbsp;&nbsp;#HY58</p>
             <div className="hero-actions">
@@ -47,6 +47,17 @@ export default function HomePage() {
               <div><span>Offline</span><strong>30 Agustus 2026</strong></div>
               <div><span>Virtual</span><strong>24-30 Agustus 2026</strong></div>
             </div>
+          </div>
+        </section>
+
+        <section className="section white story-section">
+          <div className="story-copy">
+            <p className="eyebrow">Cerita HY58</p>
+            <h2>Dimulai saja dulu. Sehat bersama HY</h2>
+            <p>Tetap berjiwa muda bukan hanya soal usia, tetapi tentang semangat untuk terus bergerak, menjaga diri, dan menjalani hidup dengan hati yang kuat.</p>
+            <p>Di usia ke-58 ini, saya ingin mengajak teman-teman semua untuk kembali berlari, berjalan, selalu bergerak dan tertawa, sambil merayakan ulang tahun saya bersama sama. HY Birthday Run 58 bukan sekadar acara lari, tetapi ruang kebersamaan untuk saling menguatkan, saling menyemangati, dan memulai langkah sehat dengan cara yang menyenangkan.</p>
+            <p>Dengan semangat Headstrong Youthful, kita percaya bahwa tubuh boleh bertambah usia, tetapi semangat harus tetap muda. Yang penting bukan seberapa cepat kita sampai, tetapi keberanian untuk mulai, konsisten bergerak, dan menikmati setiap langkahnya.</p>
+            <p>Mari rayakan ulang tahun ini dengan energi baik, tubuh yang sehat, dan hati yang penuh syukur.</p>
           </div>
         </section>
 
