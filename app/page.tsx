@@ -30,6 +30,7 @@ export default function HomePage() {
               <div className="runner-portrait">
                 <div className="runner-sun" />
                 <img className="runner-photo" src="/hedi-run-cutout.png" alt="Hedi Yunus berlari" />
+                <div className="runner-shorts-tint" aria-hidden="true" />
                 <div className="runner-track" />
               </div>
             </div>
