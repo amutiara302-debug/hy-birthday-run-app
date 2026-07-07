@@ -27,8 +27,29 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
   const [province, setProvince] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [postalCodeStatus, setPostalCodeStatus] = useState("");
+  const [registrationWindow, setRegistrationWindow] = useState<"checking" | "open" | "not-open" | "closed">("checking");
   const shirtSurcharge = useMemo(() => getShirtSurcharge(shirtSize), [shirtSize]);
   const total = useMemo(() => getRegistrationTotal(category, shirtSize), [category, shirtSize]);
+
+  useEffect(() => {
+    function updateRegistrationWindow() {
+      const now = Date.now();
+      const opensAt = Date.parse(defaultSettings.registrationOpensAt);
+      const closesAt = Date.parse(defaultSettings.registrationClosesAt);
+
+      if (now < opensAt) {
+        setRegistrationWindow("not-open");
+      } else if (now > closesAt) {
+        setRegistrationWindow("closed");
+      } else {
+        setRegistrationWindow("open");
+      }
+    }
+
+    updateRegistrationWindow();
+    const timer = window.setInterval(updateRegistrationWindow, 30000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (formRef.current) updateFormReady(formRef.current);
@@ -149,6 +170,25 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
     } else {
       setPostalCodeStatus("Kode pos belum ditemukan otomatis, silakan isi manual.");
     }
+  }
+
+  if (registrationWindow !== "open") {
+    const isChecking = registrationWindow === "checking";
+    const isClosed = registrationWindow === "closed";
+
+    return (
+      <section className="registration-form registration-lock" aria-live="polite">
+        <span className="pill">{isChecking ? "Mengecek waktu" : isClosed ? "Pendaftaran ditutup" : "Pendaftaran belum dibuka"}</span>
+        <h2>{isChecking ? "Mohon tunggu sebentar." : isClosed ? "Pendaftaran sudah ditutup." : "Pendaftaran dibuka hari ini pukul 16.00 WIB."}</h2>
+        <p>
+          {isChecking
+            ? "Sistem sedang mengecek periode pendaftaran."
+            : isClosed
+              ? "Terima kasih atas antusiasmenya. Sistem sudah tidak menerima pendaftaran baru."
+              : "Silakan kembali lagi mulai 7 Juli 2026 pukul 16.00 WIB untuk mengisi data pendaftaran."}
+        </p>
+      </section>
+    );
   }
 
   return (
