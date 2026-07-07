@@ -40,6 +40,15 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
+  if (body.action === "reject_payment") {
+    const { error: updateError } = await supabase
+      .from("registrations")
+      .update({ payment_status: "rejected" })
+      .eq("id", body.id);
+    if (updateError) throw updateError;
+    return NextResponse.json({ ok: true });
+  }
+
   if (body.action === "save_tracking") {
     const { error } = await supabase
       .from("registrations")

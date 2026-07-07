@@ -450,6 +450,28 @@ th { color: var(--muted); font-size: 13px; }
   white-space: nowrap;
 }
 td button { min-height: 36px; }
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.danger-button {
+  color: #fff;
+  background: #d94a3d;
+  border-color: #d94a3d;
+}
+.status-rejected {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 7px 12px;
+  color: #8f261d;
+  background: #fff0ee;
+  border: 1px solid #f0b7b0;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 900;
+}
 
 @media (max-width: 980px) {
   nav { display: none; }

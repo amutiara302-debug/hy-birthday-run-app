@@ -37,6 +37,15 @@ export default function AdminPanel() {
     await loadData();
   }
 
+  async function rejectPayment(id: string) {
+    await fetch("/api/admin/registrations", {
+      method: "PATCH",
+      headers: { "content-type": "application/json", "x-admin-password": password },
+      body: JSON.stringify({ id, action: "reject_payment" })
+    });
+    await loadData();
+  }
+
   async function saveTracking(id: string, trackingNumber: string) {
     await fetch("/api/admin/registrations", {
       method: "PATCH",
@@ -58,6 +67,7 @@ export default function AdminPanel() {
   const registrations = data?.registrations || [];
   const pendingPayments = registrations.filter((item) => item.payment_status === "pending").length;
   const verified = registrations.filter((item) => item.payment_status === "verified").length;
+  const rejected = registrations.filter((item) => item.payment_status === "rejected").length;
   const pendingRuns = data?.runSubmissions.filter((item) => item.status === "review").length || 0;
   const offlineRegistrations = registrations.filter((item) => item.category === "Offline");
   const virtualRegistrations = registrations.filter((item) => item.category === "Virtual");
@@ -96,7 +106,7 @@ export default function AdminPanel() {
             <article className="summary-card green"><span>Total Pendaftar</span><strong>{registrations.length}</strong><small>Offline {offlineCount} / Virtual {virtualCount}</small></article>
             <article className="summary-card cyan"><span>Uang Confirmed</span><strong>{formatRupiah(confirmedRevenue)}</strong><small>{verified} pembayaran verified</small></article>
             <article className="summary-card amber"><span>Pending Payment</span><strong>{formatRupiah(pendingRevenue)}</strong><small>{pendingPayments} pembayaran pending</small></article>
-            <article className="summary-card red"><span>Run Review</span><strong>{pendingRuns}</strong><small>Bukti lari virtual</small></article>
+            <article className="summary-card red"><span>Rejected</span><strong>{rejected}</strong><small>Pendaftaran ditolak</small></article>
           </div>
 
           <section className="admin-card dashboard-card">
@@ -109,7 +119,7 @@ export default function AdminPanel() {
                 <div style={{ height: `${Math.min(100, registrations.length * 2)}%` }}><span>Total</span></div>
                 <div style={{ height: `${Math.min(100, verified * 2)}%` }}><span>Paid</span></div>
                 <div style={{ height: `${Math.min(100, pendingPayments * 2)}%` }}><span>Pending</span></div>
-                <div style={{ height: `${Math.min(100, pendingRuns * 2)}%` }}><span>Review</span></div>
+                <div style={{ height: `${Math.min(100, rejected * 2)}%` }}><span>Reject</span></div>
               </div>
               <div className="goal-list">
                 <h3>Category Status</h3>
@@ -159,7 +169,16 @@ export default function AdminPanel() {
                         />
                       </td>
                       <td>
-                        {item.payment_status !== "verified" ? <button onClick={() => verifyPayment(item.id)}>Verifikasi</button> : <span>OK</span>}
+                        {item.payment_status === "pending" ? (
+                          <div className="action-buttons">
+                            <button onClick={() => verifyPayment(item.id)}>Verifikasi</button>
+                            <button className="danger-button" onClick={() => rejectPayment(item.id)}>Reject</button>
+                          </div>
+                        ) : item.payment_status === "rejected" ? (
+                          <span className="status-rejected">Rejected</span>
+                        ) : (
+                          <span>OK</span>
+                        )}
                       </td>
                     </tr>
                   ))}
