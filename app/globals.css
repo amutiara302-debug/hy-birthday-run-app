@@ -322,6 +322,15 @@ input:focus, select:focus, textarea:focus { border-color: var(--purple); box-sha
 }
 .success-code span { color: var(--muted); font-size: 13px; font-weight: 900; text-transform: uppercase; }
 .success-code strong { font-size: 28px; letter-spacing: 0; }
+.success-code-note {
+  max-width: 460px;
+  margin: -8px auto 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.45;
+  text-align: center;
+}
 
 .status-panel dl { display: grid; gap: 10px; margin: 20px 0 0; }
 .status-panel dl div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); }

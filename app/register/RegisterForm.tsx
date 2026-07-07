@@ -333,10 +333,13 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
       <button className="button primary full" disabled={submitting || !formReady} type="submit">{submitting ? "Mengirim..." : "Submit Pendaftaran"}</button>
       {message ? <p className={participantCode ? "form-message success-message" : "form-message"}>{message}</p> : null}
       {participantCode ? (
-        <div className="success-code">
-          <span>Kode unik peserta</span>
-          <strong>{participantCode}</strong>
-        </div>
+        <>
+          <div className="success-code">
+            <span>Kode unik peserta</span>
+            <strong>{participantCode}</strong>
+          </div>
+          <p className="success-code-note">Mohon kode unik ini tidak dishare baik ke orang lain maupun di sosial media.</p>
+        </>
       ) : null}
       {participantUrl ? <a className="button secondary full" href={participantUrl}>Buka link unik peserta</a> : null}
     </form>
