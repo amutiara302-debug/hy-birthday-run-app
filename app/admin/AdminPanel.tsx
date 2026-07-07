@@ -134,7 +134,7 @@ export default function AdminPanel() {
             <div className="responsive-table">
               <table>
                 <thead>
-                  <tr><th>Nama</th><th>Kategori</th><th>Size</th><th>Total</th><th>Bayar</th><th>Resi</th><th>Aksi</th></tr>
+                  <tr><th>Nama</th><th>Kategori</th><th>Size</th><th>Total</th><th>Bayar</th><th>Bukti</th><th>Resi</th><th>Aksi</th></tr>
                 </thead>
                 <tbody>
                   {registrations.map((item) => (
@@ -144,6 +144,13 @@ export default function AdminPanel() {
                       <td>{item.shirt_size}</td>
                       <td>{formatRupiah(getRegistrationTotal(item.category, item.shirt_size))}</td>
                       <td>{item.payment_status}</td>
+                      <td>
+                        {item.payment_proof_url ? (
+                          <a className="table-link" href={item.payment_proof_url} target="_blank" rel="noreferrer">Lihat Bukti</a>
+                        ) : (
+                          <span>-</span>
+                        )}
+                      </td>
                       <td>
                         <input
                           aria-label={`Resi ${item.full_name}`}
@@ -210,7 +217,7 @@ function PaymentSplit({ label, verified, pending }: { label: string; verified: n
 }
 
 function exportCsv(rows: Registration[]) {
-  const headers = ["Nama", "Email", "Kategori", "Telepon", "Size", "Total", "Pembayaran", "Resi"];
+  const headers = ["Nama", "Email", "Kategori", "Telepon", "Size", "Total", "Pembayaran", "Bukti Transfer", "Resi"];
   const lines = rows.map((row) => [
     row.full_name,
     row.email,
@@ -219,6 +226,7 @@ function exportCsv(rows: Registration[]) {
     row.shirt_size,
     getRegistrationTotal(row.category, row.shirt_size),
     row.payment_status,
+    row.payment_proof_url || "",
     row.tracking_number || ""
   ]);
   const csv = [headers, ...lines].map((line) => line.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")).join("\n");

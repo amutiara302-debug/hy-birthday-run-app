@@ -57,6 +57,20 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = getSupabaseAdmin();
+    const normalizedPhone = value(formData, "phone");
+    const { data: existingRegistration, error: duplicateError } = await supabase
+      .from("registrations")
+      .select("id")
+      .eq("phone", normalizedPhone)
+      .maybeSingle();
+
+    if (duplicateError) throw duplicateError;
+    if (existingRegistration) {
+      return NextResponse.json({
+        error: "Nomor telepon ini sudah pernah digunakan untuk pendaftaran. Satu nomor telepon hanya bisa untuk satu peserta."
+      }, { status: 400 });
+    }
+
     const quota = category === "Offline" ? defaultSettings.offlineQuota : defaultSettings.virtualQuota;
     const { count } = await supabase
       .from("registrations")
@@ -92,7 +106,7 @@ export async function POST(request: NextRequest) {
       category,
       full_name: value(formData, "full_name"),
       email: value(formData, "email"),
-      phone: value(formData, "phone"),
+      phone: normalizedPhone,
       birth_date: value(formData, "birth_date"),
       gender: value(formData, "gender"),
       domicile_city: value(formData, "domicile_city"),
