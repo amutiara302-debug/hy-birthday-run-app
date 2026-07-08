@@ -449,6 +449,24 @@ th { color: var(--muted); font-size: 13px; }
   text-decoration: none;
   white-space: nowrap;
 }
+.participant-code {
+  display: block;
+  color: var(--plum);
+  font-size: 15px;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+.copy-link-button {
+  margin-top: 8px;
+  padding: 7px 10px;
+  color: var(--plum);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
 td button { min-height: 36px; }
 .action-buttons {
   display: flex;

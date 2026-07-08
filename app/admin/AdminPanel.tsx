@@ -13,6 +13,7 @@ export default function AdminPanel() {
   const [password, setPassword] = useState("");
   const [data, setData] = useState<AdminData | null>(null);
   const [message, setMessage] = useState("");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   async function loadData(event?: React.FormEvent) {
     event?.preventDefault();
@@ -62,6 +63,14 @@ export default function AdminPanel() {
       body: JSON.stringify({ id, action: "approve" })
     });
     await loadData();
+  }
+
+  async function copyParticipantLink(item: Registration) {
+    const origin = window.location.origin;
+    const participantUrl = `${origin}/participant/${item.participant_token}`;
+    await navigator.clipboard.writeText(participantUrl);
+    setCopiedId(item.id);
+    window.setTimeout(() => setCopiedId(null), 1800);
   }
 
   const registrations = data?.registrations || [];
@@ -144,12 +153,18 @@ export default function AdminPanel() {
             <div className="responsive-table">
               <table>
                 <thead>
-                  <tr><th>Nama</th><th>Kategori</th><th>Size</th><th>Total</th><th>Bayar</th><th>Bukti</th><th>Resi</th><th>Aksi</th></tr>
+                  <tr><th>Nama</th><th>Kode</th><th>Kategori</th><th>Size</th><th>Total</th><th>Bayar</th><th>Bukti</th><th>Resi</th><th>Aksi</th></tr>
                 </thead>
                 <tbody>
                   {registrations.map((item) => (
                     <tr key={item.id}>
                       <td>{item.full_name}<br /><small>{item.email}</small></td>
+                      <td>
+                        <strong className="participant-code">{getParticipantCode(item)}</strong>
+                        <button className="copy-link-button" type="button" onClick={() => copyParticipantLink(item)}>
+                          {copiedId === item.id ? "Tersalin" : "Copy Link"}
+                        </button>
+                      </td>
                       <td>{item.category}</td>
                       <td>{item.shirt_size}</td>
                       <td>{formatRupiah(getRegistrationTotal(item.category, item.shirt_size))}</td>
@@ -236,10 +251,13 @@ function PaymentSplit({ label, verified, pending }: { label: string; verified: n
 }
 
 function exportCsv(rows: Registration[]) {
-  const headers = ["Nama", "Email", "Kategori", "Telepon", "Size", "Total", "Pembayaran", "Bukti Transfer", "Resi"];
+  const origin = window.location.origin;
+  const headers = ["Nama", "Email", "Kode Unik", "Link Peserta", "Kategori", "Telepon", "Size", "Total", "Pembayaran", "Bukti Transfer", "Resi"];
   const lines = rows.map((row) => [
     row.full_name,
     row.email,
+    getParticipantCode(row),
+    `${origin}/participant/${row.participant_token}`,
     row.category,
     row.phone,
     row.shirt_size,
@@ -256,4 +274,8 @@ function exportCsv(rows: Registration[]) {
   link.download = "hy-birthday-run-registrations.csv";
   link.click();
   URL.revokeObjectURL(url);
+}
+
+function getParticipantCode(row: Registration) {
+  return row.participant_token.slice(0, 8).toUpperCase();
 }
