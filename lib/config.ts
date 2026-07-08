@@ -18,7 +18,7 @@ export const defaultSettings = {
   virtualPeriod: "24 Agustus 2026 pukul 06.00 - 30 Agustus 2026 pukul 20.00"
 };
 
-export const shirtSizes = ["XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"];
+export const shirtSizes = ["3XS", "XXS", "XS", "S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"];
 export const premiumShirtSizes = ["3XL", "4XL", "5XL"];
 export const premiumShirtFee = 10000;
 

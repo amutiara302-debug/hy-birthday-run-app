@@ -330,33 +330,8 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
 
       <div className="size-chart">
         <strong>Size chart</strong>
-        <div className="size-row">{shirtSizes.map((size) => <span key={size}>{size}</span>)}</div>
-        <small>Size 3XL, 4XL, dan 5XL dikenakan tambahan {formatRupiah(premiumShirtFee)}.</small>
-        <div className="size-table-wrap">
-          <table className="size-table">
-            <thead>
-              <tr>
-                <th>Ukuran</th>
-                <th>XS</th>
-                <th>S</th>
-                <th>M</th>
-                <th>L</th>
-                <th>XL</th>
-                <th>XXL</th>
-                <th>3XL</th>
-                <th>4XL</th>
-                <th>5XL</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><th>A Lebar dada</th><td>48</td><td>50</td><td>52</td><td>54</td><td>56</td><td>58</td><td>60</td><td>62</td><td>64</td></tr>
-              <tr><th>B Panjang baju</th><td>62</td><td>64</td><td>66</td><td>68</td><td>70</td><td>72</td><td>74</td><td>76</td><td>78</td></tr>
-              <tr><th>C Panjang tangan</th><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td><td>26</td><td>27</td><td>28</td><td>29</td></tr>
-              <tr><th>D Lingkar leher</th><td>18</td><td>18</td><td>19</td><td>20</td><td>21</td><td>22</td><td>23</td><td>24</td><td>25</td></tr>
-              <tr><th>E Lingkar tangan bawah</th><td>30</td><td>31</td><td>32</td><td>33</td><td>34</td><td>35</td><td>36</td><td>37</td><td>38</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <img className="size-chart-image" src="/jersey-size-chart.png" alt="Size chart jersey HY Birthday Run" />
+        <small>Pilihan ukuran tersedia dari 3XS sampai 5XL. Size 3XL, 4XL, dan 5XL dikenakan tambahan {formatRupiah(premiumShirtFee)}.</small>
         <small>Semua ukuran dalam centimeter, toleransi manual 1 - 1,5 cm.</small>
       </div>
 
