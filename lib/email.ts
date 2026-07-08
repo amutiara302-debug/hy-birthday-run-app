@@ -8,9 +8,9 @@ type EmailOptions = {
 
 export async function sendEmail(options: EmailOptions) {
   const apiKey = process.env.RESEND_API_KEY;
-  const from = process.env.EMAIL_FROM;
+  const from = "HY Birthday Run <admin@hybirthdayrun.com>";
 
-  if (!apiKey || !from) {
+  if (!apiKey) {
     console.warn("Resend is not configured. Email skipped:", options.subject);
     return;
   }
