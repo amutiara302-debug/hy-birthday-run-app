@@ -39,7 +39,9 @@ create table if not exists registrations (
 create index if not exists registrations_category_idx on registrations(category);
 create index if not exists registrations_payment_status_idx on registrations(payment_status);
 create index if not exists registrations_email_idx on registrations(email);
-create unique index if not exists registrations_phone_unique_idx on registrations(phone);
+create unique index if not exists registrations_phone_unique_idx
+on registrations(phone)
+where payment_status <> 'rejected' and phone is not null and phone <> '';
 create index if not exists registrations_token_idx on registrations(participant_token);
 
 create table if not exists run_submissions (

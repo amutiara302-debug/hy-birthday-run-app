@@ -78,6 +78,10 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
     window.setTimeout(() => setFormReady(form.checkValidity()), 0);
   }
 
+  function keepPhoneDigits(event: React.FormEvent<HTMLInputElement>) {
+    event.currentTarget.value = event.currentTarget.value.replace(/\D/g, "").slice(0, 12);
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitting(true);
@@ -224,6 +228,7 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
             pattern="0[0-9]{9,11}"
             minLength={10}
             maxLength={12}
+            onInput={keepPhoneDigits}
             title="Nomor telepon harus diawali 0 dan berisi angka 10-12 digit."
             placeholder="08xxxxxxxxxx"
           />
@@ -253,6 +258,7 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
                 pattern="0[0-9]{9,11}"
                 minLength={10}
                 maxLength={12}
+                onInput={keepPhoneDigits}
                 title="Nomor telepon harus diawali 0 dan berisi angka 10-12 digit."
                 placeholder="08xxxxxxxxxx"
               />

@@ -14,6 +14,7 @@ export default function AdminPanel() {
   const [data, setData] = useState<AdminData | null>(null);
   const [message, setMessage] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [emailSendingId, setEmailSendingId] = useState<string | null>(null);
 
   async function loadData(event?: React.FormEvent) {
     event?.preventDefault();
@@ -57,14 +58,26 @@ export default function AdminPanel() {
   }
 
   async function resendRegistrationEmail(id: string) {
+    if (emailSendingId) return;
+    setEmailSendingId(id);
     setMessage("Mengirim email peserta...");
-    const response = await fetch("/api/admin/registrations", {
-      method: "PATCH",
-      headers: { "content-type": "application/json", "x-admin-password": password },
-      body: JSON.stringify({ id, action: "resend_registration_email" })
-    });
-    const result = await response.json();
-    setMessage(response.ok ? "Email peserta berhasil dikirim." : result.error || "Email gagal dikirim.");
+    try {
+      const response = await fetch("/api/admin/registrations", {
+        method: "PATCH",
+        headers: { "content-type": "application/json", "x-admin-password": password },
+        body: JSON.stringify({ id, action: "resend_registration_email" })
+      });
+      const result = await response.json().catch(() => ({}));
+      const nextMessage = response.ok ? "Email peserta berhasil dikirim." : result.error || "Email gagal dikirim.";
+      setMessage(nextMessage);
+      window.alert(nextMessage);
+    } catch {
+      const nextMessage = "Email gagal dikirim. Cek koneksi lalu coba lagi.";
+      setMessage(nextMessage);
+      window.alert(nextMessage);
+    } finally {
+      setEmailSendingId(null);
+    }
   }
 
   async function approveRun(id: string) {
@@ -187,7 +200,11 @@ export default function AdminPanel() {
                           <span>-</span>
                         )}
                       </td>
-                      <td><button type="button" onClick={() => resendRegistrationEmail(item.id)}>Kirim Email</button></td>
+                      <td>
+                        <button type="button" disabled={emailSendingId === item.id} onClick={() => resendRegistrationEmail(item.id)}>
+                          {emailSendingId === item.id ? "Mengirim..." : "Kirim Email"}
+                        </button>
+                      </td>
                       <td>
                         <input
                           aria-label={`Resi ${item.full_name}`}

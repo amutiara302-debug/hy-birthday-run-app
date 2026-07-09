@@ -43,7 +43,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Format email harus benar dan menggunakan @." }, { status: 400 });
     }
 
-    if (!isValidPhone(value(formData, "phone")) || (category === "Offline" && !isValidPhone(value(formData, "emergency_phone")))) {
+    const normalizedPhone = normalizePhone(value(formData, "phone"));
+    const normalizedEmergencyPhone = normalizePhone(value(formData, "emergency_phone"));
+
+    if (!isValidPhone(normalizedPhone) || (category === "Offline" && !isValidPhone(normalizedEmergencyPhone))) {
       return NextResponse.json({ error: "Nomor telepon harus diawali 0 dan berisi angka 10-12 digit." }, { status: 400 });
     }
 
@@ -57,11 +60,11 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = getSupabaseAdmin();
-    const normalizedPhone = value(formData, "phone");
     const { data: existingRegistration, error: duplicateError } = await supabase
       .from("registrations")
       .select("id")
       .eq("phone", normalizedPhone)
+      .neq("payment_status", "rejected")
       .maybeSingle();
 
     if (duplicateError) throw duplicateError;
@@ -75,7 +78,8 @@ export async function POST(request: NextRequest) {
     const { count } = await supabase
       .from("registrations")
       .select("id", { count: "exact", head: true })
-      .eq("category", category);
+      .eq("category", category)
+      .neq("payment_status", "rejected");
 
     if ((count || 0) >= quota) {
       return NextResponse.json({ error: "Kuota penuh." }, { status: 400 });
@@ -111,7 +115,7 @@ export async function POST(request: NextRequest) {
       gender: value(formData, "gender"),
       domicile_city: value(formData, "domicile_city"),
       emergency_name: nullableValue(formData, "emergency_name"),
-      emergency_phone: nullableValue(formData, "emergency_phone"),
+      emergency_phone: category === "Offline" ? normalizedEmergencyPhone : null,
       emergency_relation: nullableValue(formData, "emergency_relation"),
       running_app_account: nullableValue(formData, "running_app_account"),
       shirt_size: value(formData, "shirt_size"),
@@ -129,7 +133,14 @@ export async function POST(request: NextRequest) {
     };
 
     const { data, error } = await supabase.from("registrations").insert(payload).select("id").single();
-    if (error) throw error;
+    if (error) {
+      if (isDuplicatePhoneError(error)) {
+        return NextResponse.json({
+          error: "Nomor telepon ini sudah pernah digunakan untuk pendaftaran. Satu nomor telepon hanya bisa untuk satu peserta."
+        }, { status: 400 });
+      }
+      throw error;
+    }
 
     const participantCode = token.slice(0, 8).toUpperCase();
     const participantUrl = `${process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin}/participant/${token}`;
@@ -159,6 +170,10 @@ function isValidPhone(phone: string) {
   return /^0\d{9,11}$/.test(phone);
 }
 
+function normalizePhone(phone: string) {
+  return phone.replace(/\D/g, "");
+}
+
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -169,6 +184,13 @@ function isAllowedProofFile(file: File) {
   const filename = file.name.toLowerCase();
   const hasAllowedExtension = allowedExtensions.some((extension) => filename.endsWith(extension));
   return hasAllowedExtension && (!file.type || allowedTypes.includes(file.type));
+}
+
+function isDuplicatePhoneError(error: unknown) {
+  if (!error || typeof error !== "object") return false;
+  const current = error as { code?: string; message?: string; details?: string };
+  const text = `${current.message || ""} ${current.details || ""}`.toLowerCase();
+  return current.code === "23505" && text.includes("registrations_phone_unique_idx");
 }
 
 function sanitizeFilename(filename: string) {

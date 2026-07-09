@@ -29,9 +29,17 @@ export async function sendEmail(options: EmailOptions) {
     console.warn("Email failed. Continuing without blocking the registration.", error);
     return {
       ok: false,
-      error: error instanceof Error ? error.message : "Email gagal dikirim oleh Resend."
+      error: getEmailErrorMessage(error)
     };
   }
+}
+
+function getEmailErrorMessage(error: unknown) {
+  if (error instanceof Error) return error.message;
+  if (typeof error === "object" && error && "message" in error) {
+    return String((error as { message?: unknown }).message);
+  }
+  return "Email gagal dikirim oleh Resend. Cek RESEND_API_KEY, status domain Resend, dan Vercel Logs.";
 }
 
 export function registrationEmail(name: string, participantUrl: string, participantCode: string) {
