@@ -11,8 +11,9 @@ export async function sendEmail(options: EmailOptions) {
   const from = "HY Birthday Run <admin@hybirthdayrun.com>";
 
   if (!apiKey) {
-    console.warn("Resend is not configured. Email skipped:", options.subject);
-    return;
+    const message = "RESEND_API_KEY belum tersedia di Vercel.";
+    console.warn(message, "Email skipped:", options.subject);
+    return { ok: false, error: message };
   }
 
   const resend = new Resend(apiKey);
@@ -23,8 +24,13 @@ export async function sendEmail(options: EmailOptions) {
       subject: options.subject,
       html: options.html
     });
+    return { ok: true };
   } catch (error) {
     console.warn("Email failed. Continuing without blocking the registration.", error);
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Email gagal dikirim oleh Resend."
+    };
   }
 }
 

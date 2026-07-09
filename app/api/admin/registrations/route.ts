@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin";
+import { registrationEmail, sendEmail } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function GET(request: NextRequest) {
@@ -55,6 +56,32 @@ export async function PATCH(request: NextRequest) {
       .update({ tracking_number: body.tracking_number, shipping_status: "shipped" })
       .eq("id", body.id);
     if (error) throw error;
+    return NextResponse.json({ ok: true });
+  }
+
+  if (body.action === "resend_registration_email") {
+    const { data: registration, error } = await supabase
+      .from("registrations")
+      .select("full_name,email,participant_token")
+      .eq("id", body.id)
+      .single();
+    if (error) throw error;
+    if (!registration) {
+      return NextResponse.json({ error: "Peserta tidak ditemukan." }, { status: 404 });
+    }
+
+    const participantCode = registration.participant_token.slice(0, 8).toUpperCase();
+    const participantUrl = `${process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin}/participant/${registration.participant_token}`;
+    const emailResult = await sendEmail({
+      to: registration.email,
+      subject: "Pendaftaran HY Birthday Run diterima",
+      html: registrationEmail(registration.full_name, participantUrl, participantCode)
+    });
+
+    if (!emailResult.ok) {
+      return NextResponse.json({ error: emailResult.error || "Email gagal dikirim." }, { status: 500 });
+    }
+
     return NextResponse.json({ ok: true });
   }
 

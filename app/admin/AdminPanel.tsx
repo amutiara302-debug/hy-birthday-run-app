@@ -56,6 +56,17 @@ export default function AdminPanel() {
     await loadData();
   }
 
+  async function resendRegistrationEmail(id: string) {
+    setMessage("Mengirim email peserta...");
+    const response = await fetch("/api/admin/registrations", {
+      method: "PATCH",
+      headers: { "content-type": "application/json", "x-admin-password": password },
+      body: JSON.stringify({ id, action: "resend_registration_email" })
+    });
+    const result = await response.json();
+    setMessage(response.ok ? "Email peserta berhasil dikirim." : result.error || "Email gagal dikirim.");
+  }
+
   async function approveRun(id: string) {
     await fetch("/api/admin/run-submissions", {
       method: "PATCH",
@@ -153,7 +164,7 @@ export default function AdminPanel() {
             <div className="responsive-table">
               <table>
                 <thead>
-                  <tr><th>Nama</th><th>Kode</th><th>Kategori</th><th>Size</th><th>Total</th><th>Bayar</th><th>Bukti</th><th>Resi</th><th>Aksi</th></tr>
+                  <tr><th>Nama</th><th>Kode</th><th>Kategori</th><th>Size</th><th>Total</th><th>Bayar</th><th>Bukti</th><th>Email</th><th>Resi</th><th>Aksi</th></tr>
                 </thead>
                 <tbody>
                   {registrations.map((item) => (
@@ -176,6 +187,7 @@ export default function AdminPanel() {
                           <span>-</span>
                         )}
                       </td>
+                      <td><button type="button" onClick={() => resendRegistrationEmail(item.id)}>Kirim Email</button></td>
                       <td>
                         <input
                           aria-label={`Resi ${item.full_name}`}
@@ -200,6 +212,7 @@ export default function AdminPanel() {
                 </tbody>
               </table>
             </div>
+            {message ? <p className="form-message admin-message">{message}</p> : null}
           </section>
 
           <section className="admin-card">
