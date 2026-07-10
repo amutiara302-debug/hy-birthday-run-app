@@ -45,7 +45,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const participantCode = registration.participant_token.slice(0, 8).toUpperCase();
-    const participantUrl = `${process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin}/participant/${registration.participant_token}`;
+    const participantUrl = `${process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin}/participant/${participantCode}`;
     const emailResult = await sendEmail({
       to: registration.email,
       subject: "Pembayaran HY Birthday Run 58 telah diverifikasi",
@@ -92,7 +92,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const participantCode = registration.participant_token.slice(0, 8).toUpperCase();
-    const participantUrl = `${process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin}/participant/${registration.participant_token}`;
+    const participantUrl = `${process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin}/participant/${participantCode}`;
     const emailResult = await sendEmail({
       to: registration.email,
       subject: "Pendaftaran HY Birthday Run diterima",

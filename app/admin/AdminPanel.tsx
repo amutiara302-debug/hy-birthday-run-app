@@ -102,7 +102,7 @@ export default function AdminPanel() {
 
   async function copyParticipantLink(item: Registration) {
     const origin = window.location.origin;
-    const participantUrl = `${origin}/participant/${item.participant_token}`;
+    const participantUrl = `${origin}/participant/${getParticipantCode(item)}`;
     await navigator.clipboard.writeText(participantUrl);
     setCopiedId(item.id);
     window.setTimeout(() => setCopiedId(null), 1800);
@@ -298,7 +298,7 @@ function exportCsv(rows: Registration[]) {
     row.full_name,
     row.email,
     getParticipantCode(row),
-    `${origin}/participant/${row.participant_token}`,
+    `${origin}/participant/${getParticipantCode(row)}`,
     row.category,
     row.phone,
     row.shirt_size,

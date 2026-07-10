@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
     }
 
     const participantCode = token.slice(0, 8).toUpperCase();
-    const participantUrl = `${process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin}/participant/${token}`;
+    const participantUrl = `${process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin}/participant/${participantCode}`;
     await sendEmail({
       to: payload.email,
       subject: "Pendaftaran HY Birthday Run diterima",

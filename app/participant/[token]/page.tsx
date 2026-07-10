@@ -5,24 +5,29 @@ import type { Registration, RunSubmission } from "@/lib/types";
 
 export default async function ParticipantPage({ params }: { params: { token: string } }) {
   const supabase = getSupabaseAdmin();
-  const token = params.token.trim();
-  const { data: exactRegistration } = await supabase
-    .from("registrations")
-    .select("*")
-    .eq("participant_token", token)
-    .maybeSingle<Registration>();
+  const token = params.token.trim().toLowerCase();
+  let registration: Registration | null = null;
 
-  let registration = exactRegistration;
-
-  if (!registration && /^[a-f0-9]{8}$/i.test(token)) {
-    const { data: prefixRegistration } = await supabase
+  if (isFullUuid(token)) {
+    const { data: exactRegistration } = await supabase
       .from("registrations")
       .select("*")
-      .ilike("participant_token", `${token}%`)
-      .limit(1)
+      .eq("participant_token", token)
       .maybeSingle<Registration>();
 
-    registration = prefixRegistration;
+    registration = exactRegistration;
+  }
+
+  if (!registration && /^[a-f0-9]{8}$/i.test(token)) {
+    const { data: registrations } = await supabase
+      .from("registrations")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(1000);
+
+    registration = (registrations as Registration[] | null)?.find((item) =>
+      item.participant_token.toLowerCase().startsWith(token)
+    ) || null;
   }
 
   if (!registration) notFound();
@@ -36,4 +41,8 @@ export default async function ParticipantPage({ params }: { params: { token: str
     .maybeSingle<RunSubmission>();
 
   return <ParticipantPortal registration={registration} runSubmission={runSubmission || null} />;
+}
+
+function isFullUuid(value: string) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
