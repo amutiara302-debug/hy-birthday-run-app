@@ -57,6 +57,21 @@ export function registrationEmail(name: string, participantUrl: string, particip
   `;
 }
 
+export function paymentVerifiedEmail(name: string, participantUrl: string, participantCode: string) {
+  return `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#241230">
+      <h1>HY Birthday Run 58</h1>
+      <p>Halo ${name},</p>
+      <p>Pembayaran kamu untuk HY Birthday Run 58 telah berhasil diverifikasi oleh panitia.</p>
+      <p>Kode unik peserta kamu: <strong>${participantCode}</strong></p>
+      <p>Silakan simpan kode unik dan link peserta berikut untuk melihat status pendaftaran, informasi pengiriman paket, dan upload bukti lari virtual jika kamu memilih kategori virtual:</p>
+      <p><a href="${participantUrl}">${participantUrl}</a></p>
+      <p>Sampai ketemu di HY Birthday Run 58. Terima kasih sudah ikut bergerak sehat bersama kami.</p>
+      <p>Salam sehat,<br>Panitia HY Birthday Run</p>
+    </div>
+  `;
+}
+
 export function finisherEmail(name: string) {
   return `
     <div style="font-family:Arial,sans-serif;line-height:1.6;color:#241230">

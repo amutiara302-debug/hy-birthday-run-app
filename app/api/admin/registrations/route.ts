@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isAdminRequest } from "@/lib/admin";
-import { registrationEmail, sendEmail } from "@/lib/email";
+import { paymentVerifiedEmail, registrationEmail, sendEmail } from "@/lib/email";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
 export async function GET(request: NextRequest) {
@@ -33,11 +33,32 @@ export async function PATCH(request: NextRequest) {
   const supabase = getSupabaseAdmin();
 
   if (body.action === "verify_payment") {
-    const { error: updateError } = await supabase
+    const { data: registration, error: updateError } = await supabase
       .from("registrations")
       .update({ payment_status: "verified" })
-      .eq("id", body.id);
+      .eq("id", body.id)
+      .select("full_name,email,participant_token")
+      .single();
     if (updateError) throw updateError;
+    if (!registration) {
+      return NextResponse.json({ error: "Peserta tidak ditemukan." }, { status: 404 });
+    }
+
+    const participantCode = registration.participant_token.slice(0, 8).toUpperCase();
+    const participantUrl = `${process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin}/participant/${registration.participant_token}`;
+    const emailResult = await sendEmail({
+      to: registration.email,
+      subject: "Pembayaran HY Birthday Run 58 telah diverifikasi",
+      html: paymentVerifiedEmail(registration.full_name, participantUrl, participantCode)
+    });
+
+    if (!emailResult.ok) {
+      return NextResponse.json({
+        ok: true,
+        emailWarning: emailResult.error || "Pembayaran sudah verified, tetapi email gagal dikirim."
+      });
+    }
+
     return NextResponse.json({ ok: true });
   }
 

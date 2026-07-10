@@ -31,11 +31,22 @@ export default function AdminPanel() {
   }
 
   async function verifyPayment(id: string) {
-    await fetch("/api/admin/registrations", {
+    const response = await fetch("/api/admin/registrations", {
       method: "PATCH",
       headers: { "content-type": "application/json", "x-admin-password": password },
       body: JSON.stringify({ id, action: "verify_payment" })
     });
+    const result = await response.json().catch(() => ({}));
+    if (result.emailWarning) {
+      setMessage(result.emailWarning);
+      window.alert(result.emailWarning);
+    } else if (!response.ok) {
+      const nextMessage = result.error || "Verifikasi pembayaran gagal.";
+      setMessage(nextMessage);
+      window.alert(nextMessage);
+    } else {
+      setMessage("Pembayaran verified dan email konfirmasi dikirim.");
+    }
     await loadData();
   }
 
