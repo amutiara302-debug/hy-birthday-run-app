@@ -18,12 +18,20 @@ export async function sendEmail(options: EmailOptions) {
 
   const resend = new Resend(apiKey);
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from,
       to: options.to,
       subject: options.subject,
       html: options.html
     });
+
+    if (result.error) {
+      return {
+        ok: false,
+        error: getEmailErrorMessage(result.error)
+      };
+    }
+
     return { ok: true };
   } catch (error) {
     console.warn("Email failed. Continuing without blocking the registration.", error);

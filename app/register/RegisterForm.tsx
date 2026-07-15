@@ -106,7 +106,9 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
 
     setParticipantUrl(result.participantUrl || "");
     setParticipantCode(result.participantCode || "");
-    setMessage("Pendaftaran HY Birthday Run 58 telah berhasil. Simpan link unik peserta di bawah ini.");
+    setMessage(result.emailWarning
+      ? `Pendaftaran HY Birthday Run 58 telah berhasil. Simpan link unik peserta di bawah ini. Catatan: ${result.emailWarning}`
+      : "Pendaftaran HY Birthday Run 58 telah berhasil. Simpan link unik peserta di bawah ini.");
     event.currentTarget.reset();
     setShirtSize("M");
     setCityRegency("");

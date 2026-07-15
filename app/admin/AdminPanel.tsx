@@ -293,7 +293,26 @@ function PaymentSplit({ label, verified, pending }: { label: string; verified: n
 
 function exportCsv(rows: Registration[]) {
   const origin = window.location.origin;
-  const headers = ["Nama", "Email", "Kode Unik", "Link Peserta", "Kategori", "Telepon", "Size", "Total", "Pembayaran", "Bukti Transfer", "Resi"];
+  const headers = [
+    "Nama",
+    "Email",
+    "Kode Unik",
+    "Link Peserta",
+    "Kategori",
+    "Telepon",
+    "Size",
+    "Total",
+    "Pembayaran",
+    "Bukti Transfer",
+    "Alamat Lengkap",
+    "Kelurahan",
+    "Kecamatan",
+    "Kota/Kabupaten",
+    "Provinsi",
+    "Kode Pos",
+    "Catatan Alamat",
+    "Resi"
+  ];
   const lines = rows.map((row) => [
     row.full_name,
     row.email,
@@ -305,6 +324,13 @@ function exportCsv(rows: Registration[]) {
     getRegistrationTotal(row.category, row.shirt_size),
     row.payment_status,
     row.payment_proof_url || "",
+    row.address,
+    row.village,
+    row.district,
+    row.city_regency,
+    row.province,
+    row.postal_code,
+    row.address_notes || "",
     row.tracking_number || ""
   ]);
   const csv = [headers, ...lines].map((line) => line.map((cell) => `"${String(cell).replaceAll('"', '""')}"`).join(",")).join("\n");

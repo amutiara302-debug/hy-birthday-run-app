@@ -144,13 +144,18 @@ export async function POST(request: NextRequest) {
 
     const participantCode = token.slice(0, 8).toUpperCase();
     const participantUrl = `${process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin}/participant/${participantCode}`;
-    await sendEmail({
+    const emailResult = await sendEmail({
       to: payload.email,
       subject: "Pendaftaran HY Birthday Run diterima",
       html: registrationEmail(payload.full_name, participantUrl, participantCode)
     });
 
-    return NextResponse.json({ id: data.id, participantCode, participantUrl });
+    return NextResponse.json({
+      id: data.id,
+      participantCode,
+      participantUrl,
+      emailWarning: emailResult.ok ? null : emailResult.error || "Pendaftaran tersimpan, tetapi email gagal dikirim."
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Terjadi kesalahan saat menyimpan pendaftaran." }, { status: 500 });
