@@ -14,6 +14,8 @@ create table if not exists registrations (
   email text not null,
   phone text not null,
   birth_date date not null,
+  ktp_number text,
+  blood_type text,
   gender text not null,
   domicile_city text not null,
   emergency_name text,

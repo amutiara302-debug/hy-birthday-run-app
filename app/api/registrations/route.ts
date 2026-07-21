@@ -18,6 +18,8 @@ export async function POST(request: NextRequest) {
       "email",
       "phone",
       "birth_date",
+      "ktp_number",
+      "blood_type",
       "gender",
       "domicile_city",
       "shirt_size",
@@ -45,9 +47,19 @@ export async function POST(request: NextRequest) {
 
     const normalizedPhone = normalizePhone(value(formData, "phone"));
     const normalizedEmergencyPhone = normalizePhone(value(formData, "emergency_phone"));
+    const normalizedKtpNumber = normalizeDigits(value(formData, "ktp_number"));
+    const birthDate = parseBirthDate(value(formData, "birth_date"));
 
     if (!isValidPhone(normalizedPhone) || (category === "Offline" && !isValidPhone(normalizedEmergencyPhone))) {
       return NextResponse.json({ error: "Nomor telepon harus diawali 0 dan berisi angka 10-12 digit." }, { status: 400 });
+    }
+
+    if (!birthDate) {
+      return NextResponse.json({ error: "Tanggal lahir harus menggunakan format dd/mm/yyyy." }, { status: 400 });
+    }
+
+    if (!/^\d{16}$/.test(normalizedKtpNumber)) {
+      return NextResponse.json({ error: "No KTP harus berisi 16 digit angka." }, { status: 400 });
     }
 
     if (!/^\d{5}$/.test(value(formData, "postal_code"))) {
@@ -111,7 +123,9 @@ export async function POST(request: NextRequest) {
       full_name: value(formData, "full_name"),
       email: value(formData, "email"),
       phone: normalizedPhone,
-      birth_date: value(formData, "birth_date"),
+      birth_date: birthDate,
+      ktp_number: normalizedKtpNumber,
+      blood_type: value(formData, "blood_type"),
       gender: value(formData, "gender"),
       domicile_city: value(formData, "domicile_city"),
       emergency_name: nullableValue(formData, "emergency_name"),
@@ -177,6 +191,26 @@ function isValidPhone(phone: string) {
 
 function normalizePhone(phone: string) {
   return phone.replace(/\D/g, "");
+}
+
+function normalizeDigits(value: string) {
+  return value.replace(/\D/g, "");
+}
+
+function parseBirthDate(dateText: string) {
+  const match = dateText.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+  if (!match) return "";
+
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  const year = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+    return "";
+  }
+
+  return `${match[3]}-${match[2]}-${match[1]}`;
 }
 
 function isValidEmail(email: string) {

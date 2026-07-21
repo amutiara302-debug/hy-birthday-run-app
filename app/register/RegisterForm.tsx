@@ -82,6 +82,18 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
     event.currentTarget.value = event.currentTarget.value.replace(/\D/g, "").slice(0, 12);
   }
 
+  function keepKtpDigits(event: React.FormEvent<HTMLInputElement>) {
+    event.currentTarget.value = event.currentTarget.value.replace(/\D/g, "").slice(0, 16);
+  }
+
+  function formatBirthDateInput(event: React.FormEvent<HTMLInputElement>) {
+    const digits = event.currentTarget.value.replace(/\D/g, "").slice(0, 8);
+    const day = digits.slice(0, 2);
+    const month = digits.slice(2, 4);
+    const year = digits.slice(4, 8);
+    event.currentTarget.value = [day, month, year].filter(Boolean).join("/");
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitting(true);
@@ -215,7 +227,7 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
       </label>
 
       <div className="two-col">
-        <label>Nama lengkap <input required name="full_name" placeholder="Nama lengkap (Nama panggilan)" /></label>
+        <label>Nama lengkap sesuai KTP <input required name="full_name" placeholder="Nama lengkap sesuai KTP" /></label>
         <label>Email aktif <input required name="email" type="email" placeholder="nama@email.com" /></label>
       </div>
       <div className="two-col">
@@ -233,7 +245,44 @@ export default function RegisterForm({ initialCategory }: { initialCategory: Cat
             placeholder="08xxxxxxxxxx"
           />
         </label>
-        <label>Tanggal lahir <input required name="birth_date" type="date" /></label>
+        <label>Tanggal lahir
+          <input
+            required
+            name="birth_date"
+            type="text"
+            inputMode="numeric"
+            pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/[0-9]{4}"
+            placeholder="dd/mm/yyyy"
+            title="Tanggal lahir harus format dd/mm/yyyy, contoh 24/08/1992."
+            onInput={formatBirthDateInput}
+          />
+        </label>
+      </div>
+      <div className="two-col">
+        <label>No KTP
+          <input
+            required
+            name="ktp_number"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]{16}"
+            minLength={16}
+            maxLength={16}
+            placeholder="16 digit nomor KTP"
+            title="No KTP harus berisi 16 digit angka."
+            onInput={keepKtpDigits}
+          />
+        </label>
+        <label>Golongan darah
+          <select required name="blood_type" defaultValue="">
+            <option value="" disabled>Pilih golongan darah</option>
+            <option>A</option>
+            <option>B</option>
+            <option>AB</option>
+            <option>O</option>
+            <option>Tidak tahu</option>
+          </select>
+        </label>
       </div>
       <div className="two-col">
         <label>Jenis kelamin

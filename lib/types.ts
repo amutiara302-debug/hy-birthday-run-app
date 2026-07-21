@@ -13,6 +13,8 @@ export type Registration = {
   email: string;
   phone: string;
   birth_date: string;
+  ktp_number: string | null;
+  blood_type: string | null;
   gender: string;
   domicile_city: string;
   emergency_name: string | null;

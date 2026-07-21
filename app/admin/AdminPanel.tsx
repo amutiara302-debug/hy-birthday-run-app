@@ -300,6 +300,9 @@ function exportCsv(rows: Registration[]) {
     "Link Peserta",
     "Kategori",
     "Telepon",
+    "Tanggal Lahir",
+    "No KTP",
+    "Golongan Darah",
     "Size",
     "Total",
     "Pembayaran",
@@ -320,6 +323,9 @@ function exportCsv(rows: Registration[]) {
     `${origin}/participant/${getParticipantCode(row)}`,
     row.category,
     row.phone,
+    formatDisplayDate(row.birth_date),
+    row.ktp_number || "",
+    row.blood_type || "",
     row.shirt_size,
     getRegistrationTotal(row.category, row.shirt_size),
     row.payment_status,
@@ -345,4 +351,10 @@ function exportCsv(rows: Registration[]) {
 
 function getParticipantCode(row: Registration) {
   return row.participant_token.slice(0, 8).toUpperCase();
+}
+
+function formatDisplayDate(value: string) {
+  const [year, month, day] = value.split("-");
+  if (!year || !month || !day) return value || "";
+  return `${day}/${month}/${year}`;
 }
